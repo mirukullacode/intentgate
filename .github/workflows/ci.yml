@@ -34,6 +34,6 @@ jobs:
           cache: npm
           cache-dependency-path: site/package-lock.json
       - run: npm --prefix site ci --ignore-scripts
-      - run: npx --prefix site tsc --noEmit -p site/tsconfig.json
       - run: npm --prefix site run lint
+      # `next build` type-checks the site, so no separate tsc step.
       - run: npm --prefix site run build
