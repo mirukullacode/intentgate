@@ -1,0 +1,10 @@
+node_modules
+dist
+ui/node_modules
+ui/dist
+site/node_modules
+site/.next
+site/out
+*.log
+.env
+.env.*

@@ -1,0 +1,52 @@
+{
+  "name": "intentgate",
+  "version": "0.1.0",
+  "description": "Intent enforcement for any MCP client or ElevenLabs voice agent, powered by ArmorIQ. Plus a live Flight Recorder.",
+  "type": "module",
+  "bin": {
+    "intentgate": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "ui/dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && npm run build:ui",
+    "build:ui": "npm --prefix ui run build",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "demo:evil": "tsx examples/evil-server.ts"
+  },
+  "keywords": [
+    "mcp",
+    "armoriq",
+    "elevenlabs",
+    "ai-agents",
+    "security",
+    "prompt-injection",
+    "voice-agents"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "@armoriq/sdk": "^0.6.10",
+    "@elevenlabs/elevenlabs-js": "^2.71.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "commander": "^15.0.0",
+    "picocolors": "^1.1.1",
+    "ws": "^8.22.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/ws": "^8.18.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}
