@@ -7,16 +7,26 @@
 Intent enforcement for **any MCP client** and **ElevenLabs voice agents**, powered by **ArmorIQ**.<br/>
 One command. Zero code changes. A live Flight Recorder of what your agent planned vs. what it tried.
 
-[Website](https://intentgate.vercel.app) · [Docs](https://intentgate.vercel.app/docs) · [Demo video](#demo) · [How it works](docs/how-it-works.md)
+[**Live playground**](https://intentgate-production.up.railway.app) · [Website](https://intentgate.vercel.app) · [How it works](docs/how-it-works.md) · [Architecture](docs/architecture.md) · [DX notes on ArmorIQ](docs/dx-notes-armoriq.md)
 
 </div>
 
 ---
 
 ```bash
-npx intentgate demo        # a poisoned workspace to attack
-npx intentgate init        # protect Claude Desktop (or --client cursor)
+npx intentgate agent        # a real Claude agent attacks a poisoned workspace through IntentGate
+npx intentgate init         # protect Claude Desktop (or --client cursor)
 ```
+
+## Try it in 30 seconds
+
+Open the **[live playground](https://intentgate-production.up.railway.app)** and press *Run with IntentGate*. A real Claude agent is asked to summarize a README that hides an instruction to read an SSH key and post it to an attacker. You watch, live:
+
+1. the agent declares its plan and **ArmorIQ signs it**,
+2. the README read is **allowed by ArmorIQ's server** under the org policy,
+3. anything off-plan is **blocked**, and the attacker's inbox stays empty.
+
+*Run without IntentGate* runs the same agent with no gateway at all, so the comparison is honest. Nothing real is touched: the key is fake and the attacker is a local port.
 
 ## Why
 
@@ -26,46 +36,68 @@ Agents act on text they read, and attackers write some of that text. A hidden li
 
 **IntentGate is an MCP server that sits in front of your MCP servers** and does the ArmorIQ work for any client:
 
-1. The agent calls `declare_plan`. **ArmorIQ signs it** (Ed25519 intent token)
-2. Every tool call is checked by **ArmorIQ** (tool in plan, org policies) **plus argument binding** (the arguments match what was declared)
-3. Anything off-plan is **blocked**. Policy holds and plan changes go to **a human**, with a **spoken alert via ElevenLabs**
-4. Everything streams to the **Flight Recorder** at `localhost:4747`
+1. The agent calls `declare_plan`. **ArmorIQ signs it** and issues an intent token.
+2. Every tool call is **decided by ArmorIQ's backend** (tool in plan, org policy) **plus argument binding** (the arguments match what was declared).
+3. Anything off-plan is **blocked**. Policy holds and plan changes go to **a human**, with a **spoken alert via ElevenLabs**.
+4. Everything streams to the **Flight Recorder** at `localhost:4747`.
 
-## Demo
+## Proof
 
-| Prompt injection (Claude Desktop) | Social engineering (ElevenLabs voice agent) |
-|---|---|
-| "Summarize the README" → README read ✅ → hidden comment makes the agent read `.ssh/id_rsa` 🛑 → and post it to an attacker 🛑 | "Where's order 1042?" ✅ → "Change my UPI to scammer@ybl" 🛑 → "Then refund ₹4,999" → 🔊 *"Approval needed…"* → supervisor denies |
+One real session, plan signed by ArmorIQ, three decisions:
 
-```bash
-npx intentgate demo && npx intentgate collector
-```
-Full walkthrough: [Quickstart](docs/quickstart.md) · [ElevenLabs guide](docs/elevenlabs.md)
+| Call | Result | Decided by |
+|---|---|---|
+| `read_file README.md` | allowed, `enforcement_passed` | ArmorIQ server |
+| `read_file .ssh/id_rsa` | blocked, path differs from plan | IntentGate argument binding |
+| `http_post` to the attacker | blocked, tool not in plan | ArmorIQ |
+
+![Flight Recorder showing the allowed README read and the two blocked calls](docs/proof-flight-recorder.png)
+
+The agent `intentgate`, the MCP servers `workspace` and `web`, and the policy that allows `read_file`, `list_files`, `fetch_url` and blocks `write_file`, `http_post` are registered on platform.armoriq.ai. ArmorIQ's own policy page counts the decisions.
+
+**A finding worth stating plainly.** Current Claude models (Opus 5.5, Opus 4.8, Haiku 5.5) read the poisoned README, recognise the injection and refuse it on their own. We did not tune the attack to beat them. IntentGate's job is to make the outcome *not depend on the model*: the same gateway blocks a weaker model, a scripted agent, or a future jailbreak the same way. `scripts/simulate.ts` drives a scripted hijacked agent through the real engine, which is where the screenshot above comes from.
 
 ## The finding behind argument binding
 
-ArmorIQ's local check is **tool-level**: if `read_file(README.md)` is in the plan, `read_file(.ssh/id_rsa)` is the same tool, so it passes. IntentGate adds **argument binding** with path normalization and globs, so the plan means exactly what it says. Details in [How it works](docs/how-it-works.md#3-argument-binding) and in my [DX notes on ArmorIQ](docs/dx-notes-armoriq.md).
+ArmorIQ's plan check is **tool-level**: if `read_file(README.md)` is in the plan, `read_file(.ssh/id_rsa)` is the same tool, so it passes. IntentGate adds **argument binding** with path normalization and globs, so the plan means exactly what it says. Details in [How it works](docs/how-it-works.md#3-argument-binding) and in the [DX notes](docs/dx-notes-armoriq.md), which collect eleven concrete findings from a week on the SDK and platform.
 
 ## Install
 
 ```bash
 npx intentgate init                 # wraps the servers already in Claude Desktop
 npx intentgate init --client cursor
+npx intentgate agent                # run the attack demo with a real Claude agent
+npx intentgate agent --passthrough  # the same agent with no enforcement at all
+npx intentgate playground           # host the demo page + Flight Recorder (what the live URL runs)
 npx intentgate serve --token <secret>   # Streamable HTTP for ElevenLabs agents
 npx intentgate doctor               # checks everything, explains fixes
 npx intentgate uninstall            # restores your original config
 ```
 
-Needs Node 20+. Set `ARMORIQ_API_KEY` ([get one](https://platform.armoriq.ai)), and optionally `ELEVENLABS_API_KEY` for voice alerts. No key? Add `--offline` to try everything unsigned.
+Needs Node 20+. Set `ARMORIQ_API_KEY` ([get one](https://platform.armoriq.ai)). The built-in agent and playground also need `ANTHROPIC_API_KEY`. Optional `ELEVENLABS_API_KEY` for voice alerts. No ArmorIQ key? Add `--offline` to try everything unsigned.
+
+## How a call is decided
+
+```
+client ──tools/call──▶ IntentGate ──▶ 1. plan declared?        (gateway)
+                                      2. ArmorIQ decision      (their server, sdk mode)
+                                      3. argument binding      (IntentGate)
+                                      4. hold → human approval (recorder, voice)
+                                      5. forward · report · record
+```
+
+ArmorIQ runs in **sdk mode**: every decision is made on their backend, so it appears in their trace by construction. Local mode is not usable yet because the backend does not publish its verification key; the [spike notes](docs/spike-notes.md) have the measurements.
+
+## Deploy your own playground
+
+The repo ships a `Dockerfile` and `railway.json`. On Railway: *Deploy from GitHub repo*, set `ARMORIQ_API_KEY`, `ANTHROPIC_API_KEY`, `HOST=0.0.0.0`, `PORT=4747`, generate a domain on port 4747. One run at a time, a fresh sandbox per run, an eight-second cooldown.
 
 ## Docs
 
-- [Quickstart](docs/quickstart.md)
-- [How it works](docs/how-it-works.md)
-- [ElevenLabs voice agents](docs/elevenlabs.md)
-- [Configuration](docs/configuration.md) · [CLI](docs/cli.md)
+- [Quickstart](docs/quickstart.md) · [How it works](docs/how-it-works.md) · [Architecture](docs/architecture.md)
+- [ElevenLabs voice agents](docs/elevenlabs.md) · [Configuration](docs/configuration.md) · [CLI](docs/cli.md)
 - [Flight Recorder](docs/flight-recorder.md) · [Security model](docs/security.md)
-- [DX notes on ArmorIQ](docs/dx-notes-armoriq.md)
+- [DX notes on ArmorIQ](docs/dx-notes-armoriq.md) · [Spike notes](docs/spike-notes.md)
 
 ## Develop
 
@@ -73,14 +105,15 @@ Needs Node 20+. Set `ARMORIQ_API_KEY` ([get one](https://platform.armoriq.ai)), 
 npm install && npm --prefix ui install
 npm test                      # unit, gateway, HTTP and end-to-end stdio tests
 npm run build                 # CLI + Flight Recorder UI
-npx tsx scripts/simulate.ts --offline   # scripted agents for screenshots and video
+npx tsx scripts/simulate.ts   # scripted hijacked agents through the real engine (add --offline without a key)
 ```
 
 ## Honest limitations
 
 - An injection that reaches the model **before** it declares its plan can shape that plan. Every tool is blocked until a plan exists, which closes the common path, but not a malicious initial prompt.
 - Loose plans give loose protection: `http_post { url: "*" }` allows any URL.
-- Built in one week for the ArmorIQ Flow State hackathon. Tested on Windows and with the MCP TypeScript SDK; feedback welcome.
+- Local verification mode depends on ArmorIQ publishing its IAP public key, which it does not yet.
+- Built in one week for the ArmorIQ Flow State hackathon. Tested on Windows and Linux (Railway) with the MCP TypeScript SDK; feedback welcome.
 
 ## License
 
