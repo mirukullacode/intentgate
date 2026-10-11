@@ -61,6 +61,10 @@ Many teams will want ArmorIQ in front of MCP clients they don't control (Claude 
 *Found in the policy editor.* A server registered as a local command returns "This target returned no tools". Probing cannot work from the cloud. The manual "add tools" path exists but is only reachable after a failed probe, and the YAML tab accepts `rules: [{tool, action}]`, which the docs do not show.
 **Suggestion:** show "add tools manually" up front for local-command servers, and document the YAML rule shape.
 
+### 12. `hold` decisions require `userId` to be an email, and say so only in a console log
+*Found with `intentgate doctor` once a policy rule used `action: hold`.* The SDK's hold path calls `createDelegationRequest`, which rejects a non-email `userId` with "requesterEmail must be a valid email address". The decision still comes back as `hold`, so nothing breaks, but the delegation that would let a human approve it on the platform is silently never created.
+**Suggestion:** validate `userId` at `startSession` when holds are possible, or accept non-email identities for delegation requests.
+
 ### What worked well on the platform
 - Connect by URL validated the agent in under a second and registered it in one pass.
 - The policy review dialog's summary ("allows 2, holds 0, blocks 1, everything else blocked") is exactly the right level.

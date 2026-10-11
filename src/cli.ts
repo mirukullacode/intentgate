@@ -25,6 +25,7 @@ import { DownstreamManager } from './downstream.js';
 import { DATA_DIR, EventBus } from './events.js';
 import { GatewaySession, VERSION } from './gateway.js';
 import { startHttpGateway } from './http-server.js';
+import { createEngine } from './intent/index.js';
 import { ATTACK_PROMPT, prepareDemoConfig, startCollector as startLeakCollector, startPlayground } from './playground.js';
 import { startRecorder } from './recorder.js';
 import { createRuntime, log } from './runtime.js';
@@ -305,6 +306,7 @@ program
     }
 
     if (config) {
+      const live = new Map<string, string>();
       for (const name of Object.keys(config.servers)) {
         const manager = await DownstreamManager.connect({ [name]: config.servers[name] });
         const count = manager.toolsFor(name).length;
@@ -313,7 +315,48 @@ program
           bad(`Server '${name}' did not start or exposes no tools. Check its command and args.`);
           problems++;
         }
+        for (const t of manager.toolsFor(name)) live.set(t.name, name);
         await manager.close();
+      }
+
+      // The trap every new user hits: a valid key, no policy, everything blocked. Ask ArmorIQ
+      // what it would do for each tool before an agent ever runs.
+      if (process.env.ARMORIQ_API_KEY && config.engine === 'armoriq' && live.size > 0) {
+        console.log(`\n${pc.bold('ArmorIQ policy check')} (agent '${config.armoriq.agentId}', ${config.armoriq.mode} mode)`);
+        try {
+          const engine = createEngine({
+            engine: 'armoriq',
+            apiKey: process.env.ARMORIQ_API_KEY,
+            userId: config.armoriq.userId,
+            agentId: config.armoriq.agentId,
+            validitySeconds: 120,
+            mode: config.armoriq.mode,
+          });
+          const started = Date.now();
+          const receipt = await engine.declare({ goal: 'intentgate doctor: policy check', steps: [...live.keys()].map((tool) => ({ tool })) });
+          ok(`Plan signed by ArmorIQ in ${Date.now() - started} ms (plan ${receipt.planId?.slice(0, 8) ?? '?'}…)`);
+          let blockedAll = true;
+          for (const tool of live.keys()) {
+            const d = await engine.check(tool, {});
+            const mark = d.action === 'allow' ? pc.green('allow') : d.action === 'hold' ? pc.yellow('hold ') : pc.red('block');
+            if (d.action !== 'block') blockedAll = false;
+            console.log(`  ${mark}  ${tool.padEnd(34)} ${pc.dim(d.reason)}${d.latencyMs ? pc.dim(` · ${d.latencyMs} ms`) : ''}`);
+          }
+          await engine.close();
+          if (blockedAll) {
+            warn('ArmorIQ blocks every tool. Your org has no policy covering them yet.');
+            console.log(
+              `    Fix: platform.armoriq.ai → Policies → create one org-wide policy that lists the tools above.\n` +
+                `    Tip: keep it to ONE policy. Two same-priority policies on different servers are intersected to an empty set.`,
+            );
+            problems++;
+          }
+        } catch (err) {
+          bad(`ArmorIQ check failed: ${err instanceof Error ? err.message : String(err)}`);
+          problems++;
+        }
+      } else if (!process.env.ARMORIQ_API_KEY) {
+        warn('Skipping the ArmorIQ policy check (no ARMORIQ_API_KEY).');
       }
       const port = config.recorder.port;
       if (await portFree(port)) ok(`Port ${port} is free for the Flight Recorder`);

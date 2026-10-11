@@ -9,6 +9,8 @@ One command. Zero code changes. A live Flight Recorder of what your agent planne
 
 [**Live playground**](https://intentgate-production.up.railway.app) · [Website](https://intentgate.vercel.app) · [How it works](docs/how-it-works.md) · [Architecture](docs/architecture.md) · [DX notes on ArmorIQ](docs/dx-notes-armoriq.md)
 
+[![ci](https://github.com/mirukullacode/intentgate/actions/workflows/ci.yml/badge.svg)](https://github.com/mirukullacode/intentgate/actions/workflows/ci.yml)
+
 </div>
 
 ---
@@ -70,7 +72,7 @@ npx intentgate agent                # run the attack demo with a real Claude age
 npx intentgate agent --passthrough  # the same agent with no enforcement at all
 npx intentgate playground           # host the demo page + Flight Recorder (what the live URL runs)
 npx intentgate serve --token <secret>   # Streamable HTTP for ElevenLabs agents
-npx intentgate doctor               # checks everything, explains fixes
+npx intentgate doctor               # checks keys, servers, ports, and asks ArmorIQ what it will do for each tool
 npx intentgate uninstall            # restores your original config
 ```
 
