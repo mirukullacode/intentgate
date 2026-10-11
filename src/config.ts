@@ -75,7 +75,7 @@ export function resolveConfigPath(explicit?: string): string {
 export function loadConfig(explicit?: string): IntentGateConfig {
   const file = resolveConfigPath(explicit);
   if (!fs.existsSync(file)) {
-    throw new Error(`No config found at ${file}. Run \`npx intentgate init\` to create one.`);
+    throw new Error(`No config found at ${file}. Run \`npx @mirukulla/intentgate init\` to create one.`);
   }
   const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
   const parsed = ConfigSchema.safeParse(expandEnv(raw));

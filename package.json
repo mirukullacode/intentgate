@@ -1,5 +1,5 @@
 {
-  "name": "intentgate",
+  "name": "@mirukulla/intentgate",
   "version": "0.1.0",
   "description": "Intent enforcement for any MCP client or ElevenLabs voice agent, powered by ArmorIQ. Plus a live Flight Recorder.",
   "type": "module",

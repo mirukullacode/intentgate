@@ -57,7 +57,7 @@ export function gatewayEntry(opts: {
   if (opts.localCli) {
     return { command: process.execPath, args: [opts.localCli, ...runArgs], env: opts.env };
   }
-  const npxArgs = ['-y', 'intentgate@latest', ...runArgs];
+  const npxArgs = ['-y', '@mirukulla/intentgate@latest', ...runArgs];
   return process.platform === 'win32'
     ? { command: 'cmd', args: ['/c', 'npx', ...npxArgs], env: opts.env }
     : { command: 'npx', args: npxArgs, env: opts.env };

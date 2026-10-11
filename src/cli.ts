@@ -132,7 +132,7 @@ program
   .option('--api-key <key>', 'ArmorIQ API key (otherwise ARMORIQ_API_KEY or a prompt)')
   .option('--offline', 'set up without ArmorIQ signing (local testing only)')
   .option('--no-import', 'do not import the servers already in the client config')
-  .option('--local', 'launch this local build instead of npx intentgate@latest')
+  .option('--local', 'launch this local build instead of npx @mirukulla/intentgate@latest')
   .action(
     async (opts: { client: ClientName; config: string; apiKey?: string; offline?: boolean; import: boolean; local?: boolean }) => {
       try {
@@ -184,7 +184,7 @@ program
 ${pc.bold('Next')}
   1. Restart ${opts.client === 'claude' ? 'Claude Desktop' : 'Cursor'}
   2. Open the Flight Recorder: ${pc.cyan('http://localhost:4747')} (starts with the gateway)
-  3. Undo any time:            ${pc.cyan('npx intentgate uninstall')}
+  3. Undo any time:            ${pc.cyan('npx @mirukulla/intentgate uninstall')}
 `);
       } catch (err) {
         fail(err);
@@ -223,13 +223,13 @@ program
     ok(`Demo created in ${pc.cyan(created)}`);
     console.log(`
 ${pc.bold('Try the prompt-injection demo in Claude Desktop')}
-  1. ${pc.cyan('npx intentgate collector')}                       (terminal 1: the fake attacker)
-  2. ${pc.cyan(`npx intentgate init --no-import --config "${configFile}"`)}
+  1. ${pc.cyan('npx @mirukulla/intentgate collector')}                       (terminal 1: the fake attacker)
+  2. ${pc.cyan(`npx @mirukulla/intentgate init --no-import --config "${configFile}"`)}
   3. Restart Claude Desktop and ask: "Summarize the README in my workspace"
   4. Watch the Flight Recorder at ${pc.cyan('http://localhost:4747')}
 
 ${pc.bold('Try the voice-agent demo with ElevenLabs')}
-  ${pc.cyan(`npx intentgate serve --config "${configFile}" --token <secret>`)}
+  ${pc.cyan(`npx @mirukulla/intentgate serve --config "${configFile}" --token <secret>`)}
   then follow docs/elevenlabs.md
 
 The workspace contains ${pc.yellow('a FAKE key')} only. Nothing real is ever read or sent.`);

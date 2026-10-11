@@ -6,7 +6,7 @@ order: 5
 
 # CLI reference
 
-Run any command with `npx intentgate <command>`. Add `--help` to see its options.
+Run any command with `npx @mirukulla/intentgate <command>`. Add `--help` to see its options.
 
 | Command | What it does |
 |---|---|

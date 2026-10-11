@@ -18,7 +18,7 @@ export function Cta() {
             A poisoned workspace, a fake key, and a support desk to attack. Nothing real is touched.
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <CopyCommand command="npx intentgate agent" />
+            <CopyCommand command="npx @mirukulla/intentgate agent" />
             <Link href="/playground">
               <ShineButton beamColor="#a78bfa" variant="solid" className="h-12">
                 Open the live playground

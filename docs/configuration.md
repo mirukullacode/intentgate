@@ -6,7 +6,7 @@ order: 4
 
 # Configuration
 
-IntentGate reads `intentgate.config.json` from the current folder, from `--config <file>`, or from `INTENTGATE_CONFIG`. `npx intentgate init` writes one to `~/.intentgate/intentgate.config.json`.
+IntentGate reads `intentgate.config.json` from the current folder, from `--config <file>`, or from `INTENTGATE_CONFIG`. `npx @mirukulla/intentgate init` writes one to `~/.intentgate/intentgate.config.json`.
 
 `${VAR}` anywhere in the file is replaced with the environment variable `VAR`.
 
