@@ -397,10 +397,17 @@ program
   .option('-p, --port <port>', 'port to serve on', process.env.PORT ?? '4747')
   .option('--host <host>', 'interface to bind', process.env.HOST ?? '127.0.0.1')
   .option('-m, --model <id>', 'Anthropic model ID', DEFAULT_MODEL)
-  .action(async (opts: { config?: string; port: string; host: string; model: string }) => {
+  .option('-t, --token <token>', 'also serve /mcp for remote voice agents, protected by this token (or INTENTGATE_HTTP_TOKEN)')
+  .action(async (opts: { config?: string; port: string; host: string; model: string; token?: string }) => {
     try {
       if (!process.env.ANTHROPIC_API_KEY) fail(new Error('ANTHROPIC_API_KEY is not set. The playground agent uses the Anthropic API.'));
-      const play = await startPlayground({ configFile: opts.config, port: Number(opts.port), host: opts.host, model: opts.model });
+      const play = await startPlayground({
+        configFile: opts.config,
+        port: Number(opts.port),
+        host: opts.host,
+        model: opts.model,
+        mcpToken: opts.token ?? process.env.INTENTGATE_HTTP_TOKEN,
+      });
       ok(`Playground at ${pc.cyan(play.url)}`);
       const stop = async () => {
         await play.close();

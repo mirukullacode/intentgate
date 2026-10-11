@@ -7,6 +7,7 @@ import { loadConfig } from './config.js';
 import { scaffoldDemo } from './demo.js';
 import { DATA_DIR } from './events.js';
 import type { GatewayDeps } from './gateway.js';
+import { createMcpHandler, type McpHandler } from './http-server.js';
 import { PassthroughEngine } from './intent/passthrough.js';
 import type { RecorderRoute } from './recorder.js';
 import { createRuntime, log, type Runtime } from './runtime.js';
@@ -51,6 +52,11 @@ export interface PlaygroundOptions {
   cooldownSeconds?: number;
   /** Origins allowed to call the run API from a browser (the landing site). Default: any */
   allowedOrigins?: string[];
+  /**
+   * Also serve the MCP endpoint at /mcp on the same port, so a hosted ElevenLabs voice
+   * agent can connect to this deployment. Requests must carry this token.
+   */
+  mcpToken?: string;
 }
 
 /**
@@ -124,9 +130,19 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
   });
 
   const summary = ({ events: _e, exfiltrated, ...rest }: PlaygroundRun) => ({ ...rest, leaked: exfiltrated.length > 0 });
+  let mcp: McpHandler | undefined;
 
   const routes: RecorderRoute[] = [
     async (req, res, url) => {
+      // Remote MCP clients (ElevenLabs voice agents) connect here. Not CORS-enabled on purpose.
+      if (url.pathname === '/mcp' && mcp) {
+        await mcp.handle(req, res, url);
+        return true;
+      }
+      if (url.pathname === '/health' && req.method === 'GET') {
+        json(res, 200, { ok: true, mcp: Boolean(mcp), sessions: mcp?.sessions ?? 0 });
+        return true;
+      }
       const h = cors(req, opts.allowedOrigins);
       const api = url.pathname.startsWith('/api/');
       if (api && req.method === 'OPTIONS') {
@@ -183,6 +199,10 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
     recorderPort: opts.port,
   });
   const passthroughDeps: GatewayDeps = { ...runtime.deps, passthrough: true, createEngine: () => new PassthroughEngine() };
+  if (opts.mcpToken) {
+    mcp = createMcpHandler({ deps: runtime.deps, authToken: opts.mcpToken, log });
+    log('MCP endpoint at /mcp (token required) for remote voice agents');
+  }
 
   function startRun(mode: RunMode): PlaygroundRun {
     const isProtected = mode === 'protected' || mode === 'hijacked';
@@ -230,6 +250,7 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
     url,
     runtime,
     close: async () => {
+      await mcp?.close();
       await new Promise<void>((done) => collector.close(() => done()));
       await runtime.shutdown();
     },
