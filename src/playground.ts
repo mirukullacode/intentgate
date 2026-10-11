@@ -101,6 +101,12 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
 
   const routes: RecorderRoute[] = [
     async (req, res, url) => {
+      // Judges land on the demo page; the recorder itself is embedded there (and reachable with ?embed=1).
+      if (url.pathname === '/' && req.method === 'GET' && !url.searchParams.has('embed') && !url.searchParams.has('session')) {
+        res.writeHead(302, { location: '/play' });
+        res.end();
+        return true;
+      }
       if (url.pathname === '/play' && req.method === 'GET') {
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
         res.end(PLAY_PAGE);
@@ -222,7 +228,7 @@ const PLAY_PAGE = `<!doctype html>
   <div id="events"></div>
   <div id="verdict"></div>
 </aside>
-<iframe src="/" title="Flight Recorder"></iframe>
+<iframe src="/?embed=1" title="Flight Recorder"></iframe>
 </main>
 <script>
 const $=s=>document.querySelector(s);

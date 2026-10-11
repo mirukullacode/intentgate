@@ -10,7 +10,7 @@ export const site = {
   hackathon: "ArmorIQ × ElevenLabs Flow State Hackathon",
   hackathonUrl: "https://luma.com/tttqkw24",
   /** The hosted playground. Empty until the Railway/Fly deploy is live. */
-  playground: process.env.NEXT_PUBLIC_PLAYGROUND_URL ?? "",
+  playground: process.env.NEXT_PUBLIC_PLAYGROUND_URL ?? "https://intentgate-production.up.railway.app/play",
   /** Demo video. Empty until recorded. */
   video: process.env.NEXT_PUBLIC_VIDEO_URL ?? "",
 };
