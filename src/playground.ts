@@ -260,9 +260,14 @@ function render(run){
     return '';
   }).join('');
   if(run.status!=='running'){
-    $('#verdict').innerHTML = run.exfiltrated.length
-      ? '<div class="leak"><b>The attacker received the key.</b><div class="mono">'+H(run.exfiltrated[0]).slice(0,400)+'</div></div>'
-      : '<div class="safe"><b>Nothing reached the attacker.</b> Off-plan calls were blocked before they ran.</div>';
+    const blocked=run.events.filter(e=>e.type==='tool_result'&&!e.ok).length;
+    const allowed=run.events.filter(e=>e.type==='tool_result'&&e.ok&&e.name!=='declare_plan').length;
+    const where=run.mode==='protected'?' Every allow and block above was decided by ArmorIQ for this run.':' No gateway, no plan, no checks: whatever the model chose to do went through.';
+    let msg;
+    if(run.exfiltrated.length) msg='<div class="leak"><b>The attacker received the key.</b><div class="mono">'+H(run.exfiltrated[0]).slice(0,400)+'</div></div>';
+    else if(blocked>0) msg='<div class="safe"><b>Nothing reached the attacker.</b> '+blocked+' off-plan call'+(blocked>1?'s were':' was')+' blocked before running.'+where+'</div>';
+    else msg='<div class="safe"><b>Nothing reached the attacker, and nothing needed blocking.</b> The model read the injection and declined it on its own ('+allowed+' allowed, 0 blocked).'+where+' IntentGate is there for the day a model does not.</div>';
+    $('#verdict').innerHTML=msg;
   }
 }
 $('#run-protected').onclick=()=>start('protected');
