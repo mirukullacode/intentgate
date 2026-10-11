@@ -28,6 +28,7 @@ import { startHttpGateway } from './http-server.js';
 import { ATTACK_PROMPT, prepareDemoConfig, startCollector as startLeakCollector, startPlayground } from './playground.js';
 import { startRecorder } from './recorder.js';
 import { createRuntime, log } from './runtime.js';
+import { runScriptedAgent } from './scripted.js';
 import type { GatewayEvent } from './types.js';
 import { VoiceAlerts } from './voice.js';
 import { startCollector } from './examples/collector.js';
@@ -337,11 +338,12 @@ program
   .option('-m, --model <id>', 'Anthropic model ID', DEFAULT_MODEL)
   .option('--offline', 'enforce plans without ArmorIQ signing (local testing only)')
   .option('--passthrough', 'no enforcement at all: the "without IntentGate" half of the demo')
+  .option('--hijacked', 'drive a scripted, already-compromised agent instead of a model (no Anthropic key needed)')
   .option('--no-recorder', 'do not start the Flight Recorder')
-  .action(async (opts: { config?: string; prompt: string; model: string; offline?: boolean; passthrough?: boolean; recorder: boolean }) => {
+  .action(async (opts: { config?: string; prompt: string; model: string; offline?: boolean; passthrough?: boolean; hijacked?: boolean; recorder: boolean }) => {
     try {
-      if (!process.env.ANTHROPIC_API_KEY) {
-        fail(new Error('ANTHROPIC_API_KEY is not set. The built-in agent uses the Anthropic API.'));
+      if (!process.env.ANTHROPIC_API_KEY && !opts.hijacked) {
+        fail(new Error('ANTHROPIC_API_KEY is not set. The built-in agent uses the Anthropic API (or add --hijacked for the scripted agent).'));
       }
       const configFile = opts.config ?? prepareDemoConfig(path.join(DATA_DIR, 'agent-demo'));
       const config = loadConfig(configFile);
@@ -352,11 +354,12 @@ program
       const leaks: string[] = [];
       const collector = await startLeakCollector(9999, (hit) => leaks.push(hit)).catch(() => undefined);
       console.log(`${pc.bold('User:')} ${opts.prompt}`);
-      const run = await runAgent({
+      const driver = opts.hijacked ? runScriptedAgent : runAgent;
+      const run = await driver({
         deps: runtime.deps,
         prompt: opts.prompt,
         model: opts.model,
-        label: opts.passthrough ? 'Agent without IntentGate' : 'Agent with IntentGate',
+        label: `${opts.hijacked ? 'Hijacked agent (scripted)' : 'Claude'} ${opts.passthrough ? 'without' : 'with'} IntentGate`,
         onEvent: (e) => {
           if (e.type === 'tool_call') console.log(`${pc.magenta('→ calls')} ${e.name} ${pc.dim(JSON.stringify(e.args))}`);
           else if (e.type === 'tool_result') console.log(`${e.ok ? pc.green('  ✓ result') : pc.red('  ✗ blocked')} ${pc.dim(e.preview.split('\n')[0])}`);
