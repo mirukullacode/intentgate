@@ -29,6 +29,10 @@
     "voice-agents"
   ],
   "license": "MIT",
+  "author": "Manjunath Irukulla (https://github.com/mirukullacode)",
+  "homepage": "https://intentgate-production.up.railway.app",
+  "repository": { "type": "git", "url": "git+https://github.com/mirukullacode/intentgate.git" },
+  "bugs": { "url": "https://github.com/mirukullacode/intentgate/issues" },
   "engines": {
     "node": ">=20"
   },
