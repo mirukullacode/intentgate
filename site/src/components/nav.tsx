@@ -3,18 +3,19 @@
 import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { docsUrl, site } from "@/lib/site";
 import { Logo } from "./logo";
 
 const links = [
-  { href: "#how-it-works", label: "How it works", external: false },
-  { href: "#architecture", label: "Architecture", external: false },
-  { href: "#voice", label: "Voice agents", external: false },
+  { href: "/playground", label: "Playground", external: false, live: true },
+  { href: "/#how-it-works", label: "How it works", external: false },
+  { href: "/#architecture", label: "Architecture", external: false },
   { href: docsUrl("quickstart"), label: "Docs", external: true },
   { href: site.hackathonUrl, label: "Hackathon", external: true },
 ];
 
-export function Nav() {
+export function Nav({ clerk = false }: { clerk?: boolean }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -44,8 +45,9 @@ export function Nav() {
                 href={l.href}
                 target={l.external ? "_blank" : undefined}
                 rel={l.external ? "noreferrer" : undefined}
-                className="transition-colors hover:text-text"
+                className="flex items-center gap-1.5 transition-colors hover:text-text"
               >
+                {l.live && <span className="size-1.5 rounded-full bg-allowed shadow-[0_0_8px_var(--allowed)]" />}
                 {l.label}
               </a>
             ))}
@@ -60,14 +62,23 @@ export function Nav() {
             >
               GitHub
             </a>
-            <a
-              href={docsUrl("quickstart")}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full bg-text px-3.5 py-1.5 font-medium text-bg transition-transform active:scale-[0.97]"
-            >
-              Get started
-            </a>
+            {clerk && (
+              <>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <button type="button" className="rounded-full border border-line px-3.5 py-1.5 text-muted transition-colors hover:border-text/30 hover:text-text">
+                      Sign in
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </>
+            )}
+            <Link href="/playground" className="rounded-full bg-text px-3.5 py-1.5 font-medium text-bg transition-transform active:scale-[0.97]">
+              Try it live
+            </Link>
           </div>
 
           <button

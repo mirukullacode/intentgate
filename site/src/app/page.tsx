@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Architecture } from "@/components/architecture";
 import { CopyCommand } from "@/components/copy-command";
 import { Cta } from "@/components/cta";
@@ -137,20 +138,29 @@ export default function Home() {
 
           <FadeIn direction="up" distance={16} duration={0.7} delay={1.05}>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-              <CopyCommand command="npx intentgate demo" />
-              <a
-                href={site.video || docsUrl("quickstart")}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex h-12 items-center gap-2 rounded-xl border border-line bg-panel px-5 text-sm font-medium transition-colors hover:border-text/30"
+              <Link
+                href="/playground"
+                className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand px-6 text-sm font-semibold text-[#120b24] transition-transform hover:bg-[#b89dff] active:scale-[0.98]"
               >
-                <span className="flex size-5 items-center justify-center rounded-full bg-text text-bg">
-                  <svg width="8" height="8" viewBox="0 0 10 10" fill="currentColor" aria-hidden>
-                    <path d="M1 0.5v9l8-4.5z" />
-                  </svg>
-                </span>
-                {site.video ? "Watch the 90-second demo" : "Read the quickstart"}
-              </a>
+                <span className="size-1.5 rounded-full bg-[#120b24]/70" />
+                Run the attack live
+              </Link>
+              <CopyCommand command="npx intentgate agent" />
+              {site.video && (
+                <a
+                  href={site.video}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-12 items-center gap-2 rounded-xl border border-line bg-panel px-5 text-sm font-medium transition-colors hover:border-text/30"
+                >
+                  <span className="flex size-5 items-center justify-center rounded-full bg-text text-bg">
+                    <svg width="8" height="8" viewBox="0 0 10 10" fill="currentColor" aria-hidden>
+                      <path d="M1 0.5v9l8-4.5z" />
+                    </svg>
+                  </span>
+                  Watch the 90-second demo
+                </a>
+              )}
             </div>
           </FadeIn>
 

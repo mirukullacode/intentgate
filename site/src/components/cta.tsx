@@ -1,12 +1,11 @@
 "use client";
 
-import { docsUrl, site } from "@/lib/site";
+import Link from "next/link";
 import { CopyCommand } from "./copy-command";
 import { FadeIn } from "./tweenly/fade-in";
 import { ShineButton } from "./tweenly/shine-button";
 
 export function Cta() {
-  const href = site.playground || docsUrl("quickstart");
   return (
     <section className="cta-band border-t border-line">
       <div className="mx-auto max-w-6xl px-5 py-28 text-center">
@@ -19,13 +18,13 @@ export function Cta() {
             A poisoned workspace, a fake key, and a support desk to attack. Nothing real is touched.
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <CopyCommand command="npx intentgate demo" />
-            <a href={href} target="_blank" rel="noreferrer">
+            <CopyCommand command="npx intentgate agent" />
+            <Link href="/playground">
               <ShineButton beamColor="#a78bfa" variant="solid" className="h-12">
-                {site.playground ? "Open the live playground" : "Read the quickstart"}
+                Open the live playground
                 <span aria-hidden>→</span>
               </ShineButton>
-            </a>
+            </Link>
           </div>
         </FadeIn>
       </div>
