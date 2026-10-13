@@ -50,6 +50,8 @@ export interface PlaygroundOptions {
   model?: string;
   /** Minimum seconds between runs, to keep a public deploy's API bill sane. Default: 8 */
   cooldownSeconds?: number;
+  /** Cap on model-driven runs per rolling 24 h. Scripted runs are uncapped. Default: 200 (env PLAYGROUND_DAILY_MODEL_RUNS) */
+  dailyModelRuns?: number;
   /** Origins allowed to call the run API from a browser (the landing site). Default: any */
   allowedOrigins?: string[];
   /**
@@ -121,6 +123,7 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
   config.recorder.enabled = true;
   const model = opts.model ?? DEFAULT_MODEL;
   const cooldownMs = (opts.cooldownSeconds ?? 8) * 1000;
+  const dailyModelRuns = opts.dailyModelRuns ?? Number(process.env.PLAYGROUND_DAILY_MODEL_RUNS ?? 200);
 
   const runs = new Map<string, PlaygroundRun>();
   let active: PlaygroundRun | undefined;
@@ -177,6 +180,12 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
         if (active) return json(res, 429, { error: 'a run is already in progress' }, h), true;
         if (Date.now() - lastStarted < cooldownMs) {
           return json(res, 429, { error: `please wait ${Math.ceil((cooldownMs - (Date.now() - lastStarted)) / 1000)}s` }, h), true;
+        }
+        // Model runs cost real money on a public URL. Scripted runs are free and uncapped.
+        const dayAgo = Date.now() - 24 * 3600 * 1000;
+        const modelRunsToday = [...runs.values()].filter((r) => r.driver === 'claude' && r.startedAt > dayAgo).length;
+        if (!mode.startsWith('hijacked') && modelRunsToday >= dailyModelRuns) {
+          return json(res, 429, { error: 'daily limit for model runs reached; the scripted agent runs are still available' }, h), true;
         }
         const run = startRun(mode);
         json(res, 202, { id: run.id, mode }, h);
