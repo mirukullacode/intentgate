@@ -3,7 +3,7 @@ import { Stagger } from "./tweenly/stagger";
 
 const stats = [
   { value: 0, suffix: "", label: "lines of code changed in your agent", note: "init rewrites the MCP config, not your app" },
-  { value: 1, suffix: "", label: "command to protect Claude Desktop or Cursor", note: "npx @mirukulla/intentgate init" },
+  { value: 1, suffix: "", label: "command to protect Claude Desktop or Cursor", note: "npx intentgate-mcp init" },
   { value: 2, suffix: "", label: "independent checks on every call", note: "ArmorIQ plan and policy, then argument binding" },
   { value: 650, suffix: " ms", label: "per ArmorIQ decision, measured", note: "server-side enforceSdk, Oct 10 spike" },
 ];

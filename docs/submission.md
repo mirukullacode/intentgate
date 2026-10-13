@@ -31,7 +31,7 @@ Record from the live playground at 1440 wide. No slides. Narrate over it, or use
 | 0:38 | ArmorIQ decisions tab, the table with sources and latency | "Every decision here was made on ArmorIQ's server for this run. That's the signed plan hash." |
 | 0:46 | Click "Claude Opus · With IntentGate". Run completes with 0 blocked, green verdict | "A real Claude model refuses the injection on its own. We didn't tune the attack to beat it. The gateway is for the day a model doesn't." |
 | 0:58 | Flight Recorder tab, voice session with two holds and Approve/Deny | "Same gateway, ElevenLabs voice agent. A caller asks for a payout change and a refund. Both held for a human, with a spoken alert." |
-| 1:10 | Terminal: `npx @mirukulla/intentgate init`, then `doctor` output with allow/hold/block per tool | "One command protects Claude Desktop or Cursor. Doctor asks ArmorIQ what it will do for every tool before you run anything." |
+| 1:10 | Terminal: `npx intentgate-mcp init`, then `doctor` output with allow/hold/block per tool | "One command protects Claude Desktop or Cursor. Doctor asks ArmorIQ what it will do for every tool before you run anything." |
 | 1:22 | README on GitHub, scroll to DX notes | "Twelve findings on the SDK and platform, filed as we built. IntentGate: intent enforcement for any MCP client." |
 | 1:28 | End card: repo URL, playground URL | |
 

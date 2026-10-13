@@ -17,8 +17,8 @@ ElevenLabs agents can call tools on external **MCP servers** (SSE or Streamable 
 ```bash
 export ARMORIQ_API_KEY=ak_live_...
 export ELEVENLABS_API_KEY=sk_...           # optional: spoken alerts in the Flight Recorder
-npx @mirukulla/intentgate demo                        # gives you the demo "shop" server
-npx @mirukulla/intentgate serve --config ./intentgate-demo/intentgate.config.json --token "$(openssl rand -hex 16)"
+npx intentgate-mcp demo                        # gives you the demo "shop" server
+npx intentgate-mcp serve --config ./intentgate-demo/intentgate.config.json --token "$(openssl rand -hex 16)"
 ```
 
 This starts:

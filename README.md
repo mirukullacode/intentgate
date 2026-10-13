@@ -16,8 +16,8 @@ One command. Zero code changes. A live Flight Recorder of what your agent planne
 ---
 
 ```bash
-npx @mirukulla/intentgate agent        # a real Claude agent attacks a poisoned workspace through IntentGate
-npx @mirukulla/intentgate init         # protect Claude Desktop (or --client cursor)
+npx intentgate-mcp agent        # a real Claude agent attacks a poisoned workspace through IntentGate
+npx intentgate-mcp init         # protect Claude Desktop (or --client cursor)
 ```
 
 ## Try it in 30 seconds
@@ -66,14 +66,14 @@ ArmorIQ's plan check is **tool-level**: if `read_file(README.md)` is in the plan
 ## Install
 
 ```bash
-npx @mirukulla/intentgate init                 # wraps the servers already in Claude Desktop
-npx @mirukulla/intentgate init --client cursor
-npx @mirukulla/intentgate agent                # run the attack demo with a real Claude agent
-npx @mirukulla/intentgate agent --passthrough  # the same agent with no enforcement at all
-npx @mirukulla/intentgate playground           # host the demo page + Flight Recorder (what the live URL runs)
-npx @mirukulla/intentgate serve --token <secret>   # Streamable HTTP for ElevenLabs agents
-npx @mirukulla/intentgate doctor               # checks keys, servers, ports, and asks ArmorIQ what it will do for each tool
-npx @mirukulla/intentgate uninstall            # restores your original config
+npx intentgate-mcp init                 # wraps the servers already in Claude Desktop
+npx intentgate-mcp init --client cursor
+npx intentgate-mcp agent                # run the attack demo with a real Claude agent
+npx intentgate-mcp agent --passthrough  # the same agent with no enforcement at all
+npx intentgate-mcp playground           # host the demo page + Flight Recorder (what the live URL runs)
+npx intentgate-mcp serve --token <secret>   # Streamable HTTP for ElevenLabs agents
+npx intentgate-mcp doctor               # checks keys, servers, ports, and asks ArmorIQ what it will do for each tool
+npx intentgate-mcp uninstall            # restores your original config
 ```
 
 Needs Node 20+. Set `ARMORIQ_API_KEY` ([get one](https://platform.armoriq.ai)). The built-in agent and playground also need `ANTHROPIC_API_KEY`. Optional `ELEVENLABS_API_KEY` for voice alerts. No ArmorIQ key? Add `--offline` to try everything unsigned.

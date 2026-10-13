@@ -18,7 +18,7 @@ The Flight Recorder starts with the gateway at **http://localhost:4747**. It's a
 Every event is also written to `~/.intentgate/sessions/<date>.jsonl`. Replay a day later:
 
 ```bash
-npx @mirukulla/intentgate ui --file ~/.intentgate/sessions/2026-10-14.jsonl
+npx intentgate-mcp ui --file ~/.intentgate/sessions/2026-10-14.jsonl
 ```
 
 ## How it relates to the ArmorIQ dashboard

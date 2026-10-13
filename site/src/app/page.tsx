@@ -68,12 +68,12 @@ http_post { url: "evil…" }        ✗ armoriq`,
 ];
 
 const commands = [
-  ["npx @mirukulla/intentgate init", "Wraps the MCP servers already in Claude Desktop or Cursor. Backs up your config."],
-  ["npx @mirukulla/intentgate serve --token …", "Streamable HTTP at /mcp for ElevenLabs voice agents and hosted demos."],
-  ["npx @mirukulla/intentgate demo", "A poisoned workspace, a fake key and a support desk to attack."],
-  ["npx @mirukulla/intentgate doctor", "Checks keys, config, every server and port, and tells you how to fix it."],
-  ["npx @mirukulla/intentgate ui", "Replays saved sessions in the Flight Recorder."],
-  ["npx @mirukulla/intentgate uninstall", "Puts everything back exactly as it was."],
+  ["npx intentgate-mcp init", "Wraps the MCP servers already in Claude Desktop or Cursor. Backs up your config."],
+  ["npx intentgate-mcp serve --token …", "Streamable HTTP at /mcp for ElevenLabs voice agents and hosted demos."],
+  ["npx intentgate-mcp demo", "A poisoned workspace, a fake key and a support desk to attack."],
+  ["npx intentgate-mcp doctor", "Checks keys, config, every server and port, and tells you how to fix it."],
+  ["npx intentgate-mcp ui", "Replays saved sessions in the Flight Recorder."],
+  ["npx intentgate-mcp uninstall", "Puts everything back exactly as it was."],
 ];
 
 const faq = [
@@ -145,7 +145,7 @@ export default function Home() {
                 <span className="size-1.5 rounded-full bg-[#120b24]/70" />
                 Run the attack live
               </Link>
-              <CopyCommand command="npx @mirukulla/intentgate agent" />
+              <CopyCommand command="npx intentgate-mcp agent" />
               {site.video && (
                 <a
                   href={site.video}

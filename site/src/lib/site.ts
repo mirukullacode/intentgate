@@ -3,7 +3,7 @@ export const site = {
   tagline: "Intent enforcement for any MCP client and ElevenLabs voice agent, powered by ArmorIQ.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://intentgate.vercel.app",
   github: "https://github.com/mirukullacode/intentgate",
-  npm: "https://www.npmjs.com/package/@mirukulla/intentgate",
+  npm: "https://www.npmjs.com/package/intentgate-mcp",
   author: "Manjunath Irukulla",
   authorUrl: "https://github.com/mirukullacode",
   authorX: "https://x.com/mirukullacode",

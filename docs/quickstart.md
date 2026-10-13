@@ -11,7 +11,7 @@ IntentGate sits between an agent and its MCP tools. The agent declares what it i
 ## 1. Try the attack demo (no setup)
 
 ```bash
-npx @mirukulla/intentgate demo
+npx intentgate-mcp demo
 ```
 
 This creates an `intentgate-demo/` folder with:
@@ -34,8 +34,8 @@ No key yet? Add `--offline` to any command. Plans are still enforced, but they a
 ## 3. Wire it into Claude Desktop
 
 ```bash
-npx @mirukulla/intentgate collector                                   # terminal 1: the fake attacker
-npx @mirukulla/intentgate init --no-import --config ./intentgate-demo/intentgate.config.json
+npx intentgate-mcp collector                                   # terminal 1: the fake attacker
+npx intentgate-mcp init --no-import --config ./intentgate-demo/intentgate.config.json
 ```
 
 Restart Claude Desktop, then ask:
@@ -53,13 +53,13 @@ Open **http://localhost:4747** to watch the Flight Recorder. You'll see:
 ## 4. Protect your real servers
 
 ```bash
-npx @mirukulla/intentgate init
+npx intentgate-mcp init
 ```
 
 `init` imports the MCP servers already in your Claude Desktop config, routes them through IntentGate, and backs up the original. Undo any time:
 
 ```bash
-npx @mirukulla/intentgate uninstall
+npx intentgate-mcp uninstall
 ```
 
 Using Cursor? Add `--client cursor`.
@@ -71,7 +71,7 @@ Set `ELEVENLABS_API_KEY` and the Flight Recorder speaks every block and approval
 ## Check your setup
 
 ```bash
-npx @mirukulla/intentgate doctor
+npx intentgate-mcp doctor
 ```
 
 `doctor` checks your Node version, API keys, config, every downstream server and the recorder port, and tells you how to fix anything that's wrong.
