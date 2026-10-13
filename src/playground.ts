@@ -168,7 +168,7 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
       if (url.pathname === '/api/events' && req.method === 'GET') {
         const session = url.searchParams.get('session');
         const events = runtime.bus.snapshot().filter((e) => !session || ('sessionId' in e && e.sessionId === session));
-        json(res, 200, { events }, h);
+        json(res, 200, { events, voice: runtime.voiceActive }, h);
         return true;
       }
       if (url.pathname === '/api/run' && req.method === 'POST') {

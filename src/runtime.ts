@@ -19,6 +19,8 @@ export interface Runtime {
   bus: EventBus;
   engineKind: EngineKind;
   recorderUrl?: string;
+  /** True when ElevenLabs spoken alerts are configured. */
+  voiceActive: boolean;
   shutdown(): Promise<void>;
 }
 
@@ -102,6 +104,7 @@ export async function createRuntime(config: IntentGateConfig, opts: RuntimeOptio
     bus,
     engineKind: engine,
     recorderUrl,
+    voiceActive: voice.active,
     shutdown: async () => {
       await downstream.close();
       await recorder?.close();
