@@ -6,6 +6,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { HeroWindow } from "./hero-window";
 import { LivePulse } from "./live-pulse";
+import { NpmBanner } from "./npm-banner";
 import { SetupPrompt } from "./setup-prompt";
 import { Sidebar } from "./sidebar";
 import { FadeIn } from "./tweenly/fade-in";
@@ -32,7 +33,9 @@ export function LandingShell({ children }: { children: React.ReactNode }) {
   const copy = COPY[audience];
 
   return (
-    <div className="mx-auto grid max-w-[1400px] lg:grid-cols-[300px_1px_1fr]">
+    <>
+      <NpmBanner />
+      <div className="mx-auto grid max-w-[1400px] lg:grid-cols-[300px_1px_1fr]">
       <Sidebar audience={audience} onAudience={setAudience} />
       <div className="hidden bg-line lg:block" />
 
@@ -115,6 +118,7 @@ export function LandingShell({ children }: { children: React.ReactNode }) {
 
         {children}
       </main>
-    </div>
+      </div>
+    </>
   );
 }

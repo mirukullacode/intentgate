@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { LiveDemo } from "@/components/live-demo";
 import { Nav } from "@/components/nav";
+import { NpmBanner } from "@/components/npm-banner";
 import { FadeIn } from "@/components/tweenly/fade-in";
 import { Button } from "@/components/ui/button";
 import { clerkEnabled } from "../layout";
@@ -31,6 +32,7 @@ export default function PlaygroundPage() {
 
   return (
     <main>
+      <NpmBanner />
       <Nav clerk={clerkEnabled} />
       <div className="mx-auto max-w-7xl px-5 pb-24 pt-12">
         <FadeIn direction="up" distance={8} duration={0.5}>
