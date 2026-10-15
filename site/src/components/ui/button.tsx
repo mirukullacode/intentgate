@@ -4,20 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-[transform,background-color,border-color,color] outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-medium transition-[background-color,border-color,color,opacity] outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-text text-bg hover:bg-white",
+        default: "bg-text text-bg hover:opacity-90",
         brand: "bg-brand text-white hover:bg-brand-strong",
-        outline: "border border-line bg-panel text-text hover:border-text/30",
+        outline: "border border-line bg-bg text-text hover:border-text/40",
         ghost: "text-muted hover:bg-panel hover:text-text",
-        danger: "border border-blocked/40 bg-blocked/10 text-blocked hover:bg-blocked/20",
+        danger: "border border-blocked/40 bg-blocked/5 text-blocked hover:bg-blocked/10",
       },
       size: {
         default: "h-10 px-4",
-        sm: "h-8 rounded-lg px-3 text-[13px]",
-        lg: "h-12 px-6 text-[15px]",
+        sm: "h-8 px-3 text-[13px]",
+        lg: "h-11 px-5 text-[14.5px]",
         icon: "size-9",
       },
     },

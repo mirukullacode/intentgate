@@ -3,8 +3,6 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { LiveDemo } from "@/components/live-demo";
 import { Nav } from "@/components/nav";
 import { FadeIn } from "@/components/tweenly/fade-in";
-import { TextReveal } from "@/components/tweenly/text-reveal";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { clerkEnabled } from "../layout";
 
@@ -15,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function PlaygroundPage() {
   const signIn = clerkEnabled ? (
-    <div className="mt-2">
+    <div className="mt-4">
       <SignedOut>
         <SignInButton mode="modal">
           <Button variant="outline" size="sm" className="w-full">
@@ -32,35 +30,23 @@ export default function PlaygroundPage() {
   ) : null;
 
   return (
-    <main className="hero-glow">
+    <main>
       <Nav clerk={clerkEnabled} />
-      <div className="mx-auto max-w-7xl px-5 pb-24 pt-14">
-        <FadeIn direction="up" distance={14} duration={0.6}>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="live">
-              <span className="size-1.5 rounded-full bg-allowed shadow-[0_0_8px_var(--allowed)]" /> live, against the real ArmorIQ API
-            </Badge>
-            <Badge>sandboxed · fake key · local attacker</Badge>
+      <div className="mx-auto max-w-7xl px-5 pb-24 pt-12">
+        <FadeIn direction="up" distance={8} duration={0.5}>
+          <div className="label flex items-center gap-2">
+            <span className="size-1.5 rounded-full bg-allowed" /> Live · against the real ArmorIQ API · sandboxed, fake key, local attacker
           </div>
-        </FadeIn>
-        <h1 className="mt-4 max-w-3xl text-[2.2rem] font-semibold leading-[1.08] tracking-[-0.03em] sm:text-[3rem]">
-          <TextReveal as="span" text="Watch an agent get hijacked." stagger={0.05} className="block" />
-          <TextReveal
-            as="span"
-            text="Then watch it get stopped."
-            stagger={0.05}
-            delay={0.35}
-            className="block font-serif italic font-normal text-brand"
-          />
-        </h1>
-        <FadeIn direction="up" distance={12} delay={0.5}>
+          <h1 className="mt-4 max-w-3xl text-[1.9rem] font-medium leading-[1.15] tracking-[-0.02em] sm:text-[2.4rem]">
+            Watch an agent get hijacked. <span className="text-muted">Then watch it get stopped.</span>
+          </h1>
           <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed text-text/70">
-            The same poisoned README, the same attacker. Pick who drives the tools, a real Claude model or a scripted agent that
-            already fell for the injection, and whether IntentGate is in the path. Every allow and block in a protected run is an
-            ArmorIQ decision made on their server for this exact run.
+            Same poisoned README, same attacker. Pick who drives the tools, a real Claude model or a scripted agent that already fell
+            for the injection, and whether intentgate is in the path. In a protected run, every allow and block is an ArmorIQ decision
+            made on their server for that exact run.
           </p>
         </FadeIn>
-        <div className="mt-10">
+        <div className="mt-10 border-t border-line pt-10">
           <LiveDemo signIn={signIn} />
         </div>
       </div>

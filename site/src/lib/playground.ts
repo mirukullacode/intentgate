@@ -40,6 +40,10 @@ export type GatewayEvent =
   | { type: "plan.declared"; sessionId: string; plan: { goal: string; steps: { tool: string; params?: Record<string, unknown> }[] }; receipt: { signed: boolean; planHash: string; tokenId?: string; planId?: string }; at: number }
   | { type: "call.decided"; sessionId: string; callId: string; tool: string; args: Record<string, unknown>; decision: Decision; at: number }
   | { type: "call.completed"; sessionId: string; callId: string; tool: string; ok: boolean; durationMs: number; preview: string; at: number }
+  | { type: "call.held"; sessionId: string; callId: string; approvalId: string; tool: string; args: Record<string, unknown>; reason: string; at: number }
+  | { type: "plan.amend_requested"; sessionId: string; approvalId: string; reason: string; steps: { tool: string; params?: Record<string, unknown> }[]; at: number }
+  | { type: "approval.resolved"; sessionId: string; approvalId: string; outcome: "approved" | "denied" | "timeout"; at: number }
+  | { type: "voice.alert"; sessionId: string; text: string; audioUrl: string; at: number }
   | { type: "session.ended"; sessionId: string; at: number }
   | { type: string; sessionId?: string; at: number };
 
