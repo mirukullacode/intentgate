@@ -7,7 +7,7 @@
 Intent enforcement for **any MCP client** and **ElevenLabs voice agents**, powered by **ArmorIQ**.<br/>
 One command. Zero code changes. A live Flight Recorder of what your agent planned vs. what it tried.
 
-[**Live playground**](https://intentgate-production.up.railway.app) · [Website](https://intentgate.vercel.app) · [How it works](docs/how-it-works.md) · [Architecture](docs/architecture.md) · [DX notes on ArmorIQ](docs/dx-notes-armoriq.md)
+[**Live playground**](https://intentgate-production.up.railway.app) · [Website](https://intentgate-alpha.vercel.app) · [How it works](docs/how-it-works.md) · [Architecture](docs/architecture.md) · [DX notes on ArmorIQ](docs/dx-notes-armoriq.md)
 
 [![ci](https://github.com/mirukullacode/intentgate/actions/workflows/ci.yml/badge.svg)](https://github.com/mirukullacode/intentgate/actions/workflows/ci.yml)
 

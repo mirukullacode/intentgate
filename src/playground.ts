@@ -293,7 +293,7 @@ const PLAY_PAGE = `<!doctype html>
   .muted{color:var(--muted)}
 </style></head>
 <body>
-<header><b>IntentGate playground</b><span>Same poisoned README, same attacker. Only the gateway differs.</span><a href="https://intentgate.vercel.app">intentgate.vercel.app →</a></header>
+<header><b>IntentGate playground</b><span>Same poisoned README, same attacker. Only the gateway differs.</span><a href="https://intentgate-alpha.vercel.app">intentgate-alpha.vercel.app →</a></header>
 <main>
 <aside>
   <div class="prompt" id="prompt">loading…</div>
