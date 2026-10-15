@@ -231,6 +231,25 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
     log('MCP endpoint at /mcp (token required) for remote voice agents');
   }
 
+  // Warm ArmorIQ once per process: the first plan in a cold process pays key validation and
+  // cache fills (several seconds), which is longer than a voice platform waits for a tool.
+  if (runtime.engineKind === 'armoriq') {
+    const tools = runtime.deps.downstream.list().map((t) => ({ tool: t.name }));
+    const warm = async () => {
+      try {
+        const engine = runtime.deps.createEngine();
+        const started = Date.now();
+        await engine.declare({ goal: 'intentgate playground: warm-up', steps: tools });
+        await engine.close();
+        log(`ArmorIQ warmed in ${Date.now() - started} ms`);
+      } catch (err) {
+        log(`ArmorIQ warm-up failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
+    };
+    void warm();
+    setInterval(() => void warm(), 10 * 60 * 1000).unref();
+  }
+
   function startRun(mode: RunMode): PlaygroundRun {
     const isProtected = mode === 'protected' || mode === 'hijacked' || mode === 'voice';
     const driver: PlaygroundRun['driver'] = mode === 'voice' ? 'voice' : mode.startsWith('hijacked') ? 'scripted' : 'claude';
