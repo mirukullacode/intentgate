@@ -18,7 +18,7 @@ export function HeroWindow() {
 
   return (
     <FadeIn direction="up" distance={40} duration={0.9} delay={0.35} scale={0.985}>
-      <div className="window-ring relative mx-auto max-w-5xl overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0d0d13]">
+      <div className="scheme-dark window-ring relative mx-auto max-w-5xl overflow-hidden rounded-xl border border-white/[0.06] bg-[#0d0d13]">
         {/* Title bar */}
         <div className="flex h-11 items-center gap-3 border-b border-line px-4">
           <span className="flex items-center gap-1.5">

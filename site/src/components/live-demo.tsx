@@ -139,8 +139,10 @@ export function LiveDemo({ signIn }: { signIn?: React.ReactNode }) {
         }
       } catch (err) {
         if (!alive.current) return;
-        setNotice(err instanceof Error ? err.message : String(err));
-        setPhase("done");
+        const msg = err instanceof Error ? err.message : String(err);
+        setNotice(msg.startsWith("404") ? "That run is no longer on the server (the playground restarted). Start a new one." : msg);
+        setRun(undefined);
+        setPhase("idle");
       }
     },
     [push],
@@ -487,7 +489,7 @@ function EventRow({ e, animateText }: { e: AgentEvent; animateText: boolean }) {
           {e.ok ? <Check className="size-3 text-allowed" /> : <Lock className="size-3 text-blocked" />}
           {e.ok ? "result" : "blocked"}
         </div>
-        <div className="mt-1 whitespace-pre-wrap font-mono text-[12px] text-[#c9c9d6]">{e.preview}</div>
+        <div className="mt-1 whitespace-pre-wrap font-mono text-[12px] text-text/80">{e.preview}</div>
       </div>
     );
   }
@@ -521,7 +523,7 @@ function Verdict({ run, blocked, allowed, leaked }: { run: Run; blocked: number;
         <div className="flex items-center gap-2 text-[14px] font-semibold text-blocked">
           <Siren className="size-4" /> The attacker received the key.
         </div>
-        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap font-mono text-[11.5px] text-[#f1c7c7]">{run.exfiltrated[0].slice(0, 400)}</pre>
+        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap font-mono text-[11.5px] text-blocked">{run.exfiltrated[0].slice(0, 400)}</pre>
         <p className="mt-2 text-[12.5px] text-muted">{where}</p>
       </div>
     );

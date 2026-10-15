@@ -66,7 +66,7 @@ export function Proof() {
             <tbody className="font-mono text-[12.5px]">
               {decisions.map((d) => (
                 <tr key={d.call} className="border-t border-line">
-                  <td className="p-3 text-[#c9c9d6]">{d.call}</td>
+                  <td className="p-3 text-text/80">{d.call}</td>
                   <td className="p-3">
                     <Badge variant={d.action === "allow" ? "allowed" : d.action === "hold" ? "held" : "blocked"}>{d.action}</Badge>
                   </td>

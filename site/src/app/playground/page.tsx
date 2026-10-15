@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { LiveDemo } from "@/components/live-demo";
+import { Nav } from "@/components/nav";
 import { FadeIn } from "@/components/tweenly/fade-in";
 import { TextReveal } from "@/components/tweenly/text-reveal";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,7 @@ export default function PlaygroundPage() {
 
   return (
     <main className="hero-glow">
+      <Nav clerk={clerkEnabled} />
       <div className="mx-auto max-w-7xl px-5 pb-24 pt-14">
         <FadeIn direction="up" distance={14} duration={0.6}>
           <div className="flex flex-wrap items-center gap-2">
@@ -52,7 +54,7 @@ export default function PlaygroundPage() {
           />
         </h1>
         <FadeIn direction="up" distance={12} delay={0.5}>
-          <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed text-[#c4c4d0]">
+          <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed text-text/70">
             The same poisoned README, the same attacker. Pick who drives the tools, a real Claude model or a scripted agent that
             already fell for the injection, and whether IntentGate is in the path. Every allow and block in a protected run is an
             ArmorIQ decision made on their server for this exact run.

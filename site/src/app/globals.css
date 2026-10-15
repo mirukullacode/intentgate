@@ -1,6 +1,31 @@
 @import "tailwindcss";
 
+/* Light, document-like theme. Dark tokens are re-applied inside `.scheme-dark` for
+   product windows and screenshots, which read as photographs on a white page. */
 :root {
+  --bg: #ffffff;
+  --panel: #f7f7f8;
+  --panel-2: #efeff2;
+  --line: #e3e3e8;
+  --text: #0b0b0f;
+  --muted: #6b6b78;
+  --brand: #0a3dff;
+  --brand-strong: #0631cc;
+  --allowed: #0f9d58;
+  --blocked: #d93025;
+  --held: #b7791f;
+
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--panel);
+  --card-foreground: var(--text);
+  --muted-foreground: var(--muted);
+  --border: var(--line);
+  --ring: var(--brand);
+  color-scheme: light;
+}
+
+.scheme-dark {
   --bg: #0a0a0e;
   --panel: #101016;
   --panel-2: #15151d;
@@ -12,16 +37,14 @@
   --allowed: #3ddc97;
   --blocked: #ff5c5c;
   --held: #ffb547;
-
-  /* shadcn-style tokens used by the tweenly components */
   --background: var(--bg);
   --foreground: var(--text);
   --card: var(--panel);
   --card-foreground: var(--text);
   --muted-foreground: var(--muted);
   --border: var(--line);
-  --ring: var(--brand);
   color-scheme: dark;
+  color: var(--text);
 }
 
 @theme inline {
@@ -67,49 +90,58 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: rgba(167, 139, 250, 0.35);
+  background: rgba(10, 61, 255, 0.18);
 }
 
-/* Page-top glow, like the reference hero */
-.hero-glow {
-  background:
-    radial-gradient(1200px 520px at 50% -12%, rgba(167, 139, 250, 0.22), transparent 60%),
-    radial-gradient(500px 260px at 80% 8%, rgba(61, 220, 151, 0.05), transparent 70%);
+/* Uppercase monospace label, the page's recurring motif */
+.label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
-.grid-bg {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse at 50% 0%, black 25%, transparent 70%);
+/* Hatched bar, like a "copy setup prompt" strip */
+.hatch {
+  background-image: repeating-linear-gradient(135deg, var(--panel-2) 0 2px, transparent 2px 8px);
 }
 
-/* The thin 1px ring at the top of the product window */
+/* Figure frame with caption */
+.figure {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.figure-caption {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+/* Dark product windows keep their glow */
 .window-ring {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 60px 140px -40px rgba(124, 92, 246, 0.55),
-    0 30px 60px -30px rgba(0, 0, 0, 0.8);
+    0 40px 100px -40px rgba(10, 61, 255, 0.35),
+    0 20px 50px -30px rgba(0, 0, 0, 0.6);
 }
 
-/* Section eyebrow */
+/* Section eyebrow (kept for the playground page) */
 .eyebrow {
-  font-size: 0.78rem;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--brand);
 }
 
-/* CTA band gradient, like the reference footer */
-.cta-band {
-  background:
-    radial-gradient(900px 420px at 50% 100%, rgba(124, 92, 246, 0.55), transparent 65%),
-    linear-gradient(to bottom, var(--bg), #0e0b1b);
+.hero-glow {
+  background: radial-gradient(900px 400px at 20% -10%, rgba(10, 61, 255, 0.06), transparent 60%);
 }
 
 /* Animated connector for the architecture diagram */
@@ -139,23 +171,21 @@ body {
 }
 
 /* Long-form content: docs, blog, changelog */
-.prose { color: #d4d4de; line-height: 1.75; font-size: 15.5px; }
-.prose h1 { font-size: 2.1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text); margin: 0 0 1rem; line-height: 1.2; }
-.prose h2 { font-size: 1.45rem; font-weight: 650; color: var(--text); margin: 2.6rem 0 0.8rem; letter-spacing: -0.01em; }
+.prose { color: #2a2a33; line-height: 1.75; font-size: 15.5px; }
+.prose h1 { font-size: 2.1rem; font-weight: 600; letter-spacing: -0.02em; color: var(--text); margin: 0 0 1rem; line-height: 1.2; }
+.prose h2 { font-size: 1.45rem; font-weight: 600; color: var(--text); margin: 2.6rem 0 0.8rem; letter-spacing: -0.01em; }
 .prose h3 { font-size: 1.12rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.6rem; }
-.prose .anchor { color: inherit; text-decoration: none; }
 .prose p { margin: 0.9rem 0; }
-.prose a { color: var(--brand); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(167, 139, 250, 0.4); }
+.prose a { color: var(--brand); text-decoration: underline; text-underline-offset: 3px; }
 .prose strong { color: var(--text); }
 .prose ul, .prose ol { margin: 0.9rem 0; padding-left: 1.4rem; }
 .prose ul { list-style: disc; }
 .prose ol { list-style: decimal; }
 .prose li { margin: 0.3rem 0; }
-.prose code { font-family: var(--font-mono); font-size: 0.86em; background: var(--panel-2); border: 1px solid var(--line); padding: 0.1em 0.4em; border-radius: 6px; }
-.prose .code pre { margin: 1.2rem 0; padding: 1rem 1.1rem; border-radius: 12px; border: 1px solid var(--line); overflow-x: auto; font-size: 13px; line-height: 1.6; background: #0d0d14 !important; }
+.prose code { font-family: var(--font-mono); font-size: 0.86em; background: var(--panel-2); border: 1px solid var(--line); padding: 0.1em 0.4em; border-radius: 4px; }
+.prose .code pre { margin: 1.2rem 0; padding: 1rem 1.1rem; border: 1px solid var(--line); overflow-x: auto; font-size: 13px; line-height: 1.6; background: var(--panel) !important; }
 .prose .code code { background: none; border: 0; padding: 0; font-size: inherit; }
-.prose blockquote { margin: 1.2rem 0; padding: 0.6rem 1rem; border-left: 3px solid var(--brand); background: rgba(167, 139, 250, 0.06); border-radius: 0 10px 10px 0; color: #d9d4f5; }
-.prose blockquote p { margin: 0.3rem 0; }
+.prose blockquote { margin: 1.2rem 0; padding: 0.6rem 1rem; border-left: 3px solid var(--brand); background: var(--panel); color: var(--text); }
 .prose table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: 14px; display: block; overflow-x: auto; }
 .prose th, .prose td { text-align: left; padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
 .prose th { color: var(--text); font-weight: 600; background: var(--panel); }

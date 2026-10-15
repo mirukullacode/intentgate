@@ -60,7 +60,7 @@ export function InstallTabs() {
                 <h3 className="text-[17px] font-semibold">{c.label}</h3>
                 <Badge variant={c.status === "tested" ? "allowed" : c.status === "no setup" ? "brand" : "default"}>{c.status}</Badge>
               </div>
-              <p className="mt-2 text-[14px] leading-relaxed text-[#c4c4d0]">{c.note}</p>
+              <p className="mt-2 text-[14px] leading-relaxed text-text/70">{c.note}</p>
               <p className="mt-3 text-[12.5px] text-muted">Needs Node 20+ and an ArmorIQ API key. Add --offline to try without one.</p>
             </div>
             <ol className="grid gap-2">

@@ -34,13 +34,13 @@ export function Findings() {
     <>
       <Stagger className="grid gap-4 md:grid-cols-2" stagger={0.08}>
         {findings.map((f) => (
-          <SpotlightCard key={f.n} className="h-full p-6" color="rgba(167,139,250,0.10)" borderColor="rgba(167,139,250,0.6)">
+          <SpotlightCard key={f.n} className="h-full p-6" color="rgba(10,61,255,0.07)" borderColor="rgba(10,61,255,0.5)">
             <div className="flex items-center justify-between">
               <span className="font-mono text-xs text-muted">{f.n}</span>
               <span className="rounded-full border border-line px-2 py-0.5 text-[11px] text-muted">{f.tag}</span>
             </div>
             <h3 className="mt-3 text-[17px] font-semibold tracking-tight">{f.title}</h3>
-            <p className="mt-2 text-[14.5px] leading-relaxed text-[#c4c4d0]">{f.text}</p>
+            <p className="mt-2 text-[14.5px] leading-relaxed text-text/70">{f.text}</p>
           </SpotlightCard>
         ))}
       </Stagger>

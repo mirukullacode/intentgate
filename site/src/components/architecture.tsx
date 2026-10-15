@@ -62,7 +62,7 @@ function VLine({ label }: { label?: string }) {
 export function Architecture() {
   return (
     <FadeIn direction="up" distance={24} duration={0.8}>
-      <div className="rounded-2xl border border-line bg-[#0c0c12] p-5 sm:p-8">
+      <div className="border border-line bg-panel p-5 sm:p-8">
         {/* ArmorIQ, top center */}
         <div className="mx-auto max-w-xs">
           <Node

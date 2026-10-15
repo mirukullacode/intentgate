@@ -34,7 +34,7 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-line bg-[#07070a]">
+    <footer className="border-t border-line bg-panel/60">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5 font-semibold">
@@ -59,7 +59,7 @@ export function Footer() {
           <div key={c.title} className="grid content-start gap-2.5 text-sm">
             <span className="mb-1 text-[12px] font-medium uppercase tracking-wider text-muted">{c.title}</span>
             {c.links.map((l) => (
-              <a key={l.label} href={l.href} target="_blank" rel="noreferrer" className="text-[#c4c4d0] transition-colors hover:text-text">
+              <a key={l.label} href={l.href} target="_blank" rel="noreferrer" className="text-text/70 transition-colors hover:text-text">
                 {l.label}
               </a>
             ))}

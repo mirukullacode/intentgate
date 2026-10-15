@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Footer } from "@/components/footer";
-import { Nav } from "@/components/nav";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -34,7 +33,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   const shell = (
     <html lang="en" className={`${sans.variable} ${mono.variable} ${serif.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <Nav clerk={clerkEnabled} />
         <div className="flex-1">{children}</div>
         <Footer />
       </body>

@@ -24,7 +24,7 @@ export function Nav({ clerk = false }: { clerk?: boolean }) {
         href={site.hackathonUrl}
         target="_blank"
         rel="noreferrer"
-        className="block bg-brand text-center text-[12px] font-medium text-[#120b24] transition-colors hover:bg-[#b89dff]"
+        className="block bg-brand text-center text-[12px] font-medium text-white transition-colors hover:bg-brand-strong"
       >
         <span className="inline-block py-1.5">
           Built live for the ArmorIQ × ElevenLabs Flow State hackathon · Oct 10 to 17 · follow the build →
