@@ -177,6 +177,8 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
             prompt: ATTACK_PROMPT,
             modes: RUN_MODES,
             voice: Boolean(process.env.ELEVENLABS_API_KEY && mcp),
+            /** Git commit of the running build, injected by Railway. Lets a client or a test confirm which code is live. */
+            build: process.env.RAILWAY_GIT_COMMIT_SHA?.slice(0, 7) ?? 'local',
             busy: Boolean(active),
             runs: [...runs.values()].slice(-20).map(summary),
           },
