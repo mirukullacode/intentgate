@@ -100,6 +100,13 @@ The repo ships a `Dockerfile` and `railway.json`. On Railway: *Deploy from GitHu
 - [ElevenLabs voice agents](docs/elevenlabs.md) · [Configuration](docs/configuration.md) · [CLI](docs/cli.md)
 - [Flight Recorder](docs/flight-recorder.md) · [Security model](docs/security.md)
 - [DX notes on ArmorIQ](docs/dx-notes-armoriq.md) · [Spike notes](docs/spike-notes.md)
+- [Takeaways: insight, ambition, next steps](docs/takeaways.md) · [Submission kit](docs/submission.md)
+
+## Takeaways in three lines
+
+- **The model is not the safety layer.** Three current Claude models refused our injection on their own; the gateway makes the outcome independent of which model you run.
+- **Tool-level plans have an argument-shaped hole.** Argument binding closes it, and belongs in the platform.
+- **Next:** upstream binding as an SDK option, a "protect any MCP server" cookbook entry, and holds through ArmorIQ's own delegation flow. Full list in [docs/takeaways.md](docs/takeaways.md).
 
 ## Develop
 
