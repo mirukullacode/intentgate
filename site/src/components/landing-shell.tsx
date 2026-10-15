@@ -6,7 +6,6 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { HeroWindow } from "./hero-window";
 import { LivePulse } from "./live-pulse";
-import { NpmCard } from "./npm-banner";
 import { SetupPrompt } from "./setup-prompt";
 import { Sidebar } from "./sidebar";
 import { FadeIn } from "./tweenly/fade-in";
@@ -104,7 +103,6 @@ export function LandingShell({ children }: { children: React.ReactNode }) {
               ))}
             </div>
           </FadeIn>
-          <NpmCard className="mt-8 max-w-[560px]" />
         </div>
 
         {/* Figure 1 */}

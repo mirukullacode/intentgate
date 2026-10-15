@@ -10,6 +10,9 @@ One command. Zero code changes. A live Flight Recorder of what your agent planne
 [**Live playground**](https://intentgate-production.up.railway.app) · [Website](https://intentgate-alpha.vercel.app) · [How it works](docs/how-it-works.md) · [Architecture](docs/architecture.md) · [DX notes on ArmorIQ](docs/dx-notes-armoriq.md)
 
 [![ci](https://github.com/mirukullacode/intentgate/actions/workflows/ci.yml/badge.svg)](https://github.com/mirukullacode/intentgate/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/intentgate-mcp?color=0a3dff&label=npm)](https://www.npmjs.com/package/intentgate-mcp)
+
+<a href="https://www.npmjs.com/package/intentgate-mcp"><img src="docs/npm-card.png" alt="intentgate-mcp on npm: npx intentgate-mcp agent --hijacked runs the attack, blocked; npx intentgate-mcp init protects Claude Desktop" width="560"></a>
 
 </div>
 
