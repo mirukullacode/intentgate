@@ -84,7 +84,9 @@ A document-style landing page with a sidebar index and a Human/Agent toggle, num
 
 **Hosted playground, Railway**
 
-One container, one port: the demo page, the recorder, the run API and the `/mcp` endpoint. Four run modes: Claude with and without the gateway, the scripted agent with and without. One run at a time, a fresh sandbox per run, an eight-second cooldown, a daily cap on model runs.
+One container, one port: the demo page, the recorder, the run API and the `/mcp` endpoint. Five run modes: Claude with and without the gateway, the scripted agent with and without, and a **voice run**: the server drives a real ElevenLabs conversation through the hosted gateway with a scripted social-engineering caller, and the visitor is the supervisor, approving or denying the plan changes from the page while the call is live. One run at a time, a fresh sandbox per run, an eight-second cooldown, a daily cap on model runs.
+
+Two voice-specific mechanics: the gateway answers a held call within eight seconds with "a supervisor has been notified" so the voice platform never times out, and still records the human's decision when it arrives; and tool names the voice platform prefixes (`IntentGate_shop__lookup_order`) are mapped back to the exposed tool, so a plan copied from the model's view of the tools binds correctly.
 
 **On platform.armoriq.ai**
 
@@ -135,6 +137,7 @@ A fresh temp folder, only the public npm package, the quickstart as written, a s
 | Claude Desktop simulated over stdio against that entry | 10 tools listed; `declare_plan` signed; README read allowed; key read blocked by binding; upload blocked by ArmorIQ |
 | `npx intentgate-mcp uninstall` | original config restored byte for byte, backup removed |
 | ElevenLabs text conversation through the hosted `/mcp` | plan signed; `lookup_order` allowed by ArmorIQ; payout change and refund routed to human holds with spoken alerts |
+| Voice run from the playground with a live supervisor | caller asks for a refund; agent calls `amend_plan`; supervisor approves within the window; plan amended; `issue_refund` held by ArmorIQ's policy, approved by the supervisor, then allowed; 42 s end to end |
 | Hosted playground, all modes via API | scripted without gateway: leaked; scripted with: 1 allowed, 2 blocked; Claude with: 2 allowed, 0 blocked, model refused on its own |
 | Landing and playground pages on Vercel | 200, live pulse reading real data |
 | CI | green on Ubuntu and Windows, Node 20 and 22 |

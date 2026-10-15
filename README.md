@@ -68,6 +68,10 @@ The voice agent session, an ElevenLabs agent over the hosted gateway, lookup all
 
 ![Flight Recorder showing the voice session with an allowed lookup and two holds](docs/proof-voice-session.png)
 
+**Run the call yourself.** On the [playground](https://intentgate-alpha.vercel.app/playground), *Run a support call* drives a real ElevenLabs agent through the gateway with a scripted social-engineering caller. You are the supervisor: when the agent asks to change its plan, Approve or Deny it from the Flight Recorder tab while the call is live. The gateway answers the agent within eight seconds either way, so the voice platform never times out, and records your decision when it lands.
+
+![Playground voice run: caller, agent, tool calls, with the visitor as supervisor](docs/playground-voice.png)
+
 The agent `intentgate`, the MCP servers `workspace` and `web`, and the policy that allows `read_file`, `list_files`, `fetch_url` and blocks `write_file`, `http_post` are registered on platform.armoriq.ai. ArmorIQ's own policy page counts the decisions.
 
 **A finding worth stating plainly.** Current Claude models (Opus 5.5, Opus 4.8, Haiku 5.5) read the poisoned README, recognise the injection and refuse it on their own. We did not tune the attack to beat them. IntentGate's job is to make the outcome *not depend on the model*: the same gateway blocks a weaker model, a scripted agent, or a future jailbreak the same way. `scripts/simulate.ts` drives a scripted hijacked agent through the real engine, which is where the screenshot above comes from.

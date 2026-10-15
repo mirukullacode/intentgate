@@ -187,17 +187,30 @@ export class GatewaySession {
     return server;
   }
 
-  async handleCall(name: string, args: Record<string, unknown>): Promise<CallToolResult> {
+  async handleCall(rawName: string, args: Record<string, unknown>): Promise<CallToolResult> {
     if (!this.passthrough) {
-      if (name === 'declare_plan') return this.declarePlan(args);
-      if (name === 'amend_plan') return this.amendPlan(args);
+      if (rawName === 'declare_plan' || rawName.endsWith('_declare_plan')) return this.declarePlan(args);
+      if (rawName === 'amend_plan' || rawName.endsWith('_amend_plan')) return this.amendPlan(args);
     }
-    if (!this.deps.downstream.has(name)) return text(`Unknown tool '${name}'.`, true);
+    const name = this.resolveTool(rawName);
+    if (!this.deps.downstream.has(name)) return text(`Unknown tool '${rawName}'.`, true);
     return this.guardedCall(name, args);
+  }
+
+  /**
+   * Some clients present tools to their model under a prefixed name (ElevenLabs shows
+   * `IntentGate_shop__lookup_order`), and the model copies that name into its plan. Map such
+   * names back to the tool we actually expose, so the plan binds to the right tool.
+   */
+  private resolveTool(name: string): string {
+    if (this.deps.downstream.has(name)) return name;
+    const known = this.deps.downstream.list().find((t) => name.endsWith(`_${t.name}`) || name.endsWith(`.${t.name}`));
+    return known ? known.name : name;
   }
 
   private validateSteps(steps: PlanStep[]): string | undefined {
     if (steps.length === 0) return 'A plan needs at least one step.';
+    for (const s of steps) s.tool = this.resolveTool(s.tool);
     const unknown = steps.filter((s) => !this.deps.downstream.has(s.tool)).map((s) => s.tool);
     if (unknown.length > 0) {
       const available = this.deps.downstream.list().map((t) => t.name).join(', ');

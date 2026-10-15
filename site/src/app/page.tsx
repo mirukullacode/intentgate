@@ -50,7 +50,7 @@ const decisions = [
 const where = [
   ["01", "Your laptop", "npx intentgate-mcp init wraps the MCP servers already in Claude Desktop or Cursor. Backs up the config, one command undoes it. Flight Recorder on localhost."],
   ["02", "A hosted gateway", "One container, one port: the demo page, the recorder and an MCP endpoint for remote agents. The Dockerfile and Railway config ship in the repo."],
-  ["03", "A phone line", "Point an ElevenLabs agent at the hosted endpoint. Every call gets its own signed plan, holds go to a supervisor with a spoken alert."],
+  ["03", "A phone line", "Point an ElevenLabs agent at the hosted endpoint. Every call gets its own signed plan, holds go to a supervisor with a spoken alert. Try it: the playground lets you be the supervisor on a live call."],
 ] as const;
 
 const writing = [
