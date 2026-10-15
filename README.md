@@ -55,6 +55,16 @@ One real session, plan signed by ArmorIQ, three decisions:
 
 ![Flight Recorder showing the allowed README read and the two blocked calls](docs/proof-flight-recorder.png)
 
+The same scripted agent on the **live playground**, without the gateway and with it:
+
+| Without IntentGate: the key leaks in 3 seconds | With IntentGate: two blocks, nothing leaks |
+|---|---|
+| ![Playground, no gateway, key leaked](docs/playground-leak.png) | ![Playground, with IntentGate, two blocked](docs/playground-blocked.png) |
+
+The voice agent session, an ElevenLabs agent over the hosted gateway, lookup allowed and two plan changes held for a human:
+
+![Flight Recorder showing the voice session with an allowed lookup and two holds](docs/proof-voice-session.png)
+
 The agent `intentgate`, the MCP servers `workspace` and `web`, and the policy that allows `read_file`, `list_files`, `fetch_url` and blocks `write_file`, `http_post` are registered on platform.armoriq.ai. ArmorIQ's own policy page counts the decisions.
 
 **A finding worth stating plainly.** Current Claude models (Opus 5.5, Opus 4.8, Haiku 5.5) read the poisoned README, recognise the injection and refuse it on their own. We did not tune the attack to beat them. IntentGate's job is to make the outcome *not depend on the model*: the same gateway blocks a weaker model, a scripted agent, or a future jailbreak the same way. `scripts/simulate.ts` drives a scripted hijacked agent through the real engine, which is where the screenshot above comes from.

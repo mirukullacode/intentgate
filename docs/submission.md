@@ -40,9 +40,23 @@ Record from the live playground at 1440 wide. No slides. Narrate over it, or use
 - [ ] GitHub repo: https://github.com/mirukullacode/intentgate
 - [ ] Live URL: https://intentgate-production.up.railway.app
 - [ ] Video, 90 s or less
-- [ ] Screenshot: `docs/proof-flight-recorder.png` (coding agent, one allowed, two blocked)
-- [ ] Screenshot: `docs/proof-voice-session.png` (voice agent, allowed lookup, two holds)
-- [ ] Screenshot: ArmorIQ Policies → IntentGate demo, decision counters
-- [ ] Screenshot: ArmorIQ Event Log
-- [ ] Screenshot: ArmorIQ Agent Registry and MCP Server Registry
+- [x] Screenshot: `docs/proof-flight-recorder.png` (coding agent, one allowed, two blocked)
+- [x] Screenshot: `docs/proof-voice-session.png` (voice agent, allowed lookup, two holds)
+- [x] Screenshot: `docs/playground-blocked.png` (live playground, scripted agent with IntentGate, two blocks)
+- [x] Screenshot: `docs/playground-leak.png` (live playground, same agent with no gateway, key leaked)
+- [x] Screenshot: `docs/site-landing.png` (the landing page)
+- [ ] Screenshot: ArmorIQ Policies → IntentGate demo, decision counters. Save as `docs/armoriq-policy.png`
+- [ ] Screenshot: ArmorIQ Event Log. Save as `docs/armoriq-event-log.png`
+- [ ] Screenshot: ArmorIQ Agent Registry. Save as `docs/armoriq-agents.png`
+- [ ] Screenshot: ArmorIQ MCP Server Registry. Save as `docs/armoriq-mcp-servers.png`
 - [ ] Short description above
+
+The four ArmorIQ files need a dashboard login. Once they exist with those exact names, the README's "On the ArmorIQ platform" section and this page link to them automatically; commit and push after adding.
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Landing page](site-landing.png) | ![Playground, scripted agent blocked](playground-blocked.png) |
+| ![Playground, scripted agent leaks without the gateway](playground-leak.png) | ![Flight Recorder, coding agent](proof-flight-recorder.png) |
+| ![Flight Recorder, voice agent](proof-voice-session.png) | |

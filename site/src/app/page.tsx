@@ -162,6 +162,21 @@ export default function Home() {
           </figure>
         </div>
 
+        <div className="mt-10 grid gap-8 lg:grid-cols-2">
+          <figure>
+            <div className="figure overflow-hidden rounded-lg">
+              <Image src="/proof/playground-leak.png" alt="Live playground: the scripted agent with no gateway reads the key and posts it; the run is marked leaked" width={1440} height={1150} className="block w-full" />
+            </div>
+            <figcaption className="figure-caption mt-3">Figure 5 · The live playground, scripted agent, no gateway. Three calls go through and the key is in the attacker&apos;s inbox in three seconds.</figcaption>
+          </figure>
+          <figure>
+            <div className="figure overflow-hidden rounded-lg">
+              <Image src="/proof/playground-blocked.png" alt="Live playground: the same scripted agent with IntentGate; README allowed, key read and upload blocked" width={1440} height={1150} className="block w-full" />
+            </div>
+            <figcaption className="figure-caption mt-3">Figure 6 · The same agent with IntentGate. One allowed, two blocked, 299 ms per ArmorIQ decision on this run.</figcaption>
+          </figure>
+        </div>
+
         <div className="mt-10 overflow-x-auto border border-line">
           <table className="w-full text-[13.5px]">
             <thead>
