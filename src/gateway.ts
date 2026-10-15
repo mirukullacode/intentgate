@@ -10,9 +10,16 @@ import { checkBinding } from './binding.js';
 import type { DownstreamManager } from './downstream.js';
 import type { Hub } from './hub.js';
 import type { IntentEngine } from './intent/index.js';
-import type { Decision, Plan, PlanReceipt, PlanStep } from './types.js';
+import type { ApprovalOutcome, Decision, Plan, PlanReceipt, PlanStep } from './types.js';
 
 export const VERSION = '0.1.0';
+
+/**
+ * How long a tool call may wait on a human before the gateway answers "pending" instead.
+ * ElevenLabs and other voice clients time out tool calls at roughly 30 s; the decision
+ * itself keeps waiting for the full approval timeout in the recorder.
+ */
+export const HOLD_SOFT_TIMEOUT_MS = Number(process.env.INTENTGATE_HOLD_SOFT_TIMEOUT_MS ?? 20_000);
 
 export const INSTRUCTIONS = `IntentGate protects these tools with intent enforcement.
 Before using ANY other tool, call declare_plan with the user's goal and every tool call you intend to make, including the exact arguments you know (use "*" for values you cannot know yet).
@@ -249,25 +256,38 @@ export class GatewaySession {
       steps,
       at: Date.now(),
     });
-    const result = await outcome;
-    this.deps.hub.publish({ type: 'approval.resolved', sessionId: this.id, approvalId, outcome: result, at: Date.now() });
-    if (result !== 'approved') {
+
+    const applyIfApproved = async (result: ApprovalOutcome): Promise<CallToolResult> => {
+      this.deps.hub.publish({ type: 'approval.resolved', sessionId: this.id, approvalId, outcome: result, at: Date.now() });
+      if (result !== 'approved') {
+        return text(
+          `The plan change was ${result === 'denied' ? 'denied by a human reviewer' : 'not approved in time'}. Do not attempt these actions. Tell the user you can't do this.`,
+          true,
+        );
+      }
+      const plan: Plan = { goal: this.plan!.goal, steps: [...this.plan!.steps, ...steps] };
+      try {
+        const receipt = await this.getEngine().declare(plan);
+        this.plan = plan;
+        this.receipt = receipt;
+        this.deps.hub.publish({ type: 'plan.amended', sessionId: this.id, plan, receipt, at: Date.now() });
+        return text(`Plan change approved. Added: ${steps.map((s) => s.tool).join(', ')}.`);
+      } catch (err) {
+        return text(`Approved, but ArmorIQ could not re-sign the plan: ${err instanceof Error ? err.message : String(err)}`, true);
+      }
+    };
+
+    // Voice clients time out a tool call that waits on a human for too long. Answer within the
+    // soft window; the decision still lands later and amends the plan for the rest of the session.
+    const result = await Promise.race([outcome, new Promise<'pending'>((r) => setTimeout(() => r('pending'), HOLD_SOFT_TIMEOUT_MS))]);
+    if (result === 'pending') {
+      void outcome.then((r) => applyIfApproved(r)).catch(() => {});
       return text(
-        `The plan change was ${result === 'denied' ? 'denied by a human reviewer' : 'not approved in time'}. Do not attempt these actions. Tell the user you can't do this.`,
+        'A supervisor has been notified and has not decided yet. Do not perform these actions now. Tell the user a supervisor is reviewing the request and you will follow up.',
         true,
       );
     }
-
-    const plan: Plan = { goal: this.plan.goal, steps: [...this.plan.steps, ...steps] };
-    try {
-      const receipt = await this.getEngine().declare(plan);
-      this.plan = plan;
-      this.receipt = receipt;
-      this.deps.hub.publish({ type: 'plan.amended', sessionId: this.id, plan, receipt, at: Date.now() });
-      return text(`Plan change approved. Added: ${steps.map((s) => s.tool).join(', ')}.`);
-    } catch (err) {
-      return text(`Approved, but ArmorIQ could not re-sign the plan: ${err instanceof Error ? err.message : String(err)}`, true);
-    }
+    return applyIfApproved(result);
   }
 
   /** The enforcement pipeline: plan exists → ArmorIQ decision → argument binding → (approval) → execute. */
@@ -337,7 +357,19 @@ export class GatewaySession {
           reason: decision.reason,
           at: Date.now(),
         });
-        const result = await outcome;
+        const result = await Promise.race([outcome, new Promise<'pending'>((r) => setTimeout(() => r('pending'), HOLD_SOFT_TIMEOUT_MS))]);
+        if (result === 'pending') {
+          // Answer the client now; record the human's decision whenever it arrives.
+          void outcome
+            .then((r) => this.deps.hub.publish({ type: 'approval.resolved', sessionId: this.id, approvalId, outcome: r, at: Date.now() }))
+            .catch(() => {});
+          return blocked({
+            action: 'block',
+            reason: 'waiting for a human reviewer. A supervisor has been notified; do not perform this now, tell the user you will follow up',
+            source: 'human',
+            matchedPolicy: decision.matchedPolicy,
+          });
+        }
         this.deps.hub.publish({ type: 'approval.resolved', sessionId: this.id, approvalId, outcome: result, at: Date.now() });
         if (result !== 'approved') {
           return blocked({

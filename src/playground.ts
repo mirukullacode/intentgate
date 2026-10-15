@@ -252,7 +252,15 @@ export async function startPlayground(opts: PlaygroundOptions): Promise<{ url: s
     const promise =
       driver === 'voice'
         ? process.env.ELEVENLABS_API_KEY && mcp
-          ? runVoiceCall({ apiKey: process.env.ELEVENLABS_API_KEY, agentId: VOICE_AGENT_ID, bus: runtime.bus, onEvent })
+          ? runVoiceCall({
+              apiKey: process.env.ELEVENLABS_API_KEY,
+              agentId: VOICE_AGENT_ID,
+              bus: runtime.bus,
+              onEvent,
+              onSession: (id) => {
+                run.sessionId = id;
+              },
+            })
           : Promise.reject(new Error('voice runs need ELEVENLABS_API_KEY and the /mcp endpoint (set a token)'))
         : driver === 'scripted'
           ? runScriptedAgent({ deps, onEvent, label: isProtected ? 'Hijacked agent (scripted) with IntentGate' : 'Hijacked agent (scripted) without IntentGate' })

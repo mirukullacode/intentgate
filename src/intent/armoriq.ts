@@ -12,17 +12,29 @@ import type { EngineOptions, IntentEngine } from './engine.js';
  * (`GET /iap/public-key` returns `enabled: false`), so local JWT verification fails
  * closed on every call. See docs/spike-notes.md.
  */
+/**
+ * One ArmorIQClient per credential set, shared across sessions. The client validates the
+ * API key and warms caches on first use (several seconds); sharing it means only the first
+ * session in a process pays that, instead of every conversation.
+ */
+const clients = new Map<string, ArmorIQClient>();
+function sharedClient(opts: EngineOptions): ArmorIQClient {
+  const key = `${opts.apiKey}|${opts.userId}|${opts.agentId}`;
+  let client = clients.get(key);
+  if (!client) {
+    client = new ArmorIQClient({ apiKey: opts.apiKey, userId: opts.userId, agentId: opts.agentId });
+    clients.set(key, client);
+  }
+  return client;
+}
+
 export class ArmorIQEngine implements IntentEngine {
   readonly kind = 'armoriq' as const;
   private readonly client: ArmorIQClient;
   private readonly session: ArmorIQSession;
 
   constructor(opts: EngineOptions) {
-    this.client = new ArmorIQClient({
-      apiKey: opts.apiKey,
-      userId: opts.userId,
-      agentId: opts.agentId,
-    });
+    this.client = sharedClient(opts);
     this.session = this.client.startSession({
       mode: opts.mode ?? 'sdk',
       llm: 'intentgate',
@@ -70,6 +82,6 @@ export class ArmorIQEngine implements IntentEngine {
       // Best effort: the decisions were already made and logged locally.
     }
     await this.session.close();
-    this.client.close();
+    // The client is shared across sessions and lives for the process; do not close it here.
   }
 }

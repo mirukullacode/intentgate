@@ -17,6 +17,8 @@ export interface VoiceCallOptions {
   bus: EventBus;
   lines?: string[];
   onEvent?: (event: AgentEvent) => void;
+  /** Called as soon as the agent's gateway session is known, so a UI can follow it live. */
+  onSession?: (sessionId: string) => void;
   /** Seconds to keep the call open after the last line so a human can resolve holds. Default: 150 */
   holdWindowSeconds?: number;
 }
@@ -39,7 +41,10 @@ export async function runVoiceCall(opts: VoiceCallOptions): Promise<AgentRun> {
   let sessionId: string | undefined;
   const pendingApprovals = new Set<string>();
   const off = opts.bus.onEvent((e) => {
-    if (e.type === 'session.started' && e.transport === 'http' && e.at >= startedAt - 1000 && !sessionId) sessionId = e.sessionId;
+    if (e.type === 'session.started' && e.transport === 'http' && e.at >= startedAt - 1000 && !sessionId) {
+      sessionId = e.sessionId;
+      opts.onSession?.(sessionId);
+    }
     if (!sessionId || !('sessionId' in e) || e.sessionId !== sessionId) return;
     if (e.type === 'call.held' || e.type === 'plan.amend_requested') pendingApprovals.add(e.approvalId);
     if (e.type === 'approval.resolved') pendingApprovals.delete(e.approvalId);
@@ -54,6 +59,7 @@ export async function runVoiceCall(opts: VoiceCallOptions): Promise<AgentRun> {
   return new Promise<AgentRun>((resolve) => {
     const ws = new WebSocket(signedUrl);
     let turn = 0;
+    let lastWaiting = -1;
     let idle: NodeJS.Timeout | undefined;
     let closing = false;
     const finish = (reason?: string) => {
@@ -84,7 +90,10 @@ export async function runVoiceCall(opts: VoiceCallOptions): Promise<AgentRun> {
           return;
         }
         if (pendingApprovals.size > 0 && Date.now() - startedAt < holdWindowMs + 30_000) {
-          emit({ type: 'text', text: `Waiting for a supervisor to decide (${pendingApprovals.size} pending)…`, at: Date.now() });
+          if (lastWaiting !== pendingApprovals.size) {
+            lastWaiting = pendingApprovals.size;
+            emit({ type: 'text', text: `Call on hold: waiting for a supervisor to decide (${pendingApprovals.size} pending).`, at: Date.now() });
+          }
           idle = setTimeout(armIdle, 5000);
           return;
         }
