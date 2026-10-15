@@ -7,6 +7,7 @@ import { docsUrl, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export const TOC = [
+  { id: "problem", label: "The problem" },
   { id: "mission", label: "Mission" },
   { id: "how", label: "How it works" },
   { id: "production", label: "In production" },
