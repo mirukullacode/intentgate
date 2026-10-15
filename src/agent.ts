@@ -7,6 +7,7 @@ export const DEFAULT_MODEL = process.env.INTENTGATE_AGENT_MODEL ?? 'claude-opus-
 
 export type AgentEvent =
   | { type: 'text'; text: string; at: number }
+  | { type: 'caller'; text: string; at: number }
   | { type: 'tool_call'; name: string; args: Record<string, unknown>; at: number }
   | { type: 'tool_result'; name: string; ok: boolean; preview: string; at: number }
   | { type: 'fallback'; from: string; to: string; at: number }

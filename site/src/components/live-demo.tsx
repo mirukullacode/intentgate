@@ -196,10 +196,18 @@ export function LiveDemo({ signIn }: { signIn?: React.ReactNode }) {
           </p>
         </div>
 
-        {(["Claude Opus", "Hijacked agent"] as const).map((driver) => (
-          <div key={driver}>
-            <div className="label mb-2.5">{driver === "Claude Opus" ? "A real model" : "A scripted, compromised agent"}</div>
-            <div className="grid grid-cols-2 gap-2">
+        {(["Claude Opus", "Hijacked agent", "Voice agent"] as const).map((driver) => (
+          <div key={driver} className={driver === "Voice agent" && info && !info.voice ? "hidden" : undefined}>
+            <div className="label mb-2.5">
+              {driver === "Claude Opus" ? "A real model" : driver === "Hijacked agent" ? "A scripted, compromised agent" : "A real voice agent, ElevenLabs"}
+            </div>
+            {driver === "Voice agent" && (
+              <p className="mb-2.5 text-[12.5px] leading-relaxed text-muted">
+                A scripted caller phones the support agent: order status, then a payout change, then a refund. You are the supervisor:
+                when a plan change appears in the Flight Recorder tab, approve or deny it.
+              </p>
+            )}
+            <div className={cn("grid gap-2", driver === "Voice agent" ? "grid-cols-1" : "grid-cols-2")}>
               {MODES.filter((m) => m.driver === driver).map((m) => (
                 <Button
                   key={m.mode}
@@ -315,7 +323,7 @@ export function LiveDemo({ signIn }: { signIn?: React.ReactNode }) {
             {run && (
               <div className="flex items-center gap-1.5 pb-2">
                 <Badge variant={run.protected ? "brand" : "default"}>{run.protected ? "with intentgate" : "no gateway"}</Badge>
-                <Badge>{run.driver === "scripted" ? "scripted" : info?.model}</Badge>
+                <Badge>{run.driver === "scripted" ? "scripted" : run.driver === "voice" ? "ElevenLabs agent" : info?.model}</Badge>
                 {run.status !== "running" && <Badge variant={run.status === "done" ? "allowed" : "blocked"}>{run.status}</Badge>}
               </div>
             )}
@@ -451,6 +459,14 @@ function EventRow({ e }: { e: AgentEvent }) {
       </div>
     );
   }
+  if (e.type === "caller") {
+    return (
+      <div className="border-l-2 border-brand/60 py-1.5 pl-3">
+        <div className="label text-brand">caller says</div>
+        <div className="mt-0.5 text-[13.5px] leading-relaxed">&ldquo;{e.text}&rdquo;</div>
+      </div>
+    );
+  }
   if (e.type === "fallback") return <div className="border-l-2 border-held py-1.5 pl-3 text-[12.5px] text-held">Model fallback: {e.from} declined, {e.to} continued.</div>;
   if (e.type === "refusal") return <div className="border-l-2 border-held py-1.5 pl-3 text-[12.5px] text-held">Model declined: {e.reason}</div>;
   if (e.type === "error") return <div className="border-l-2 border-blocked py-1.5 pl-3 text-[12.5px] text-blocked">Error: {e.message}</div>;
@@ -503,6 +519,16 @@ function RecorderView({ events, run, reduced }: { events: GatewayEvent[]; run?: 
     events.filter((e): e is Extract<GatewayEvent, { type: "approval.resolved" }> => e.type === "approval.resolved").map((e) => [e.approvalId, e.outcome]),
   );
   const alerts = events.filter((e): e is Extract<GatewayEvent, { type: "voice.alert" }> => e.type === "voice.alert");
+
+  // Local echo of a decision until the gateway's approval.resolved event arrives on the next poll.
+  const [local, setLocal] = useState<Map<string, "approved" | "denied">>(() => new Map());
+  const [deciding, setDeciding] = useState<string>();
+  const decide = async (id: string, decision: "approved" | "denied") => {
+    setDeciding(id);
+    const ok = await playground.approve(id, decision);
+    setDeciding(undefined);
+    if (ok) setLocal((m) => new Map(m).set(id, decision));
+  };
 
   if (!run) {
     return (
@@ -597,15 +623,26 @@ function RecorderView({ events, run, reduced }: { events: GatewayEvent[]; run?: 
               );
             })}
             {[...held.map((h) => ({ id: h.approvalId, title: h.tool.replace("__", "/"), detail: JSON.stringify(h.args), reason: h.reason })), ...amends.map((a) => ({ id: a.approvalId, title: "Plan change requested", detail: a.steps.map((s) => `${s.tool} ${JSON.stringify(s.params ?? {})}`).join("\n"), reason: a.reason }))].map((h) => {
-              const outcome = outcomes.get(h.id);
+              const outcome = outcomes.get(h.id) ?? local.get(h.id);
               return (
                 <motion.div key={h.id} initial={reduced ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: EASE }} className="border-l-2 border-held py-1.5 pl-3">
                   <div className="flex items-center gap-2">
                     <span className="text-[13px] font-medium">{h.title}</span>
-                    <Badge variant={outcome === "approved" ? "allowed" : outcome ? "blocked" : "held"}>{outcome ?? "waiting for a human"}</Badge>
+                    <Badge variant={outcome === "approved" ? "allowed" : outcome ? "blocked" : "held"}>{outcome ?? "waiting for you"}</Badge>
                   </div>
                   <div className="mt-0.5 text-[12.5px] text-text/80">&ldquo;{h.reason}&rdquo;</div>
                   <pre className="mt-1 whitespace-pre-wrap font-mono text-[11.5px] text-muted">{h.detail}</pre>
+                  {!outcome && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-[12px] text-muted">You are the supervisor. This adds new actions to the signed plan.</span>
+                      <Button size="sm" variant="danger" disabled={deciding === h.id} onClick={() => decide(h.id, "denied")}>
+                        Deny
+                      </Button>
+                      <Button size="sm" variant="brand" disabled={deciding === h.id} onClick={() => decide(h.id, "approved")}>
+                        Approve
+                      </Button>
+                    </div>
+                  )}
                 </motion.div>
               );
             })}

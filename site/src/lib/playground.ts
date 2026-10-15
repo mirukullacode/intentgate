@@ -3,10 +3,11 @@ import { site } from "./site";
 /** Base URL of the hosted playground API (the Railway service). */
 export const PLAYGROUND_API = site.playground.replace(/\/play\/?$/, "");
 
-export type RunMode = "protected" | "passthrough" | "hijacked" | "hijacked-passthrough";
+export type RunMode = "protected" | "passthrough" | "hijacked" | "hijacked-passthrough" | "voice";
 
 export type AgentEvent =
   | { type: "text"; text: string; at: number }
+  | { type: "caller"; text: string; at: number }
   | { type: "tool_call"; name: string; args: Record<string, unknown>; at: number }
   | { type: "tool_result"; name: string; ok: boolean; preview: string; at: number }
   | { type: "fallback"; from: string; to: string; at: number }
@@ -17,7 +18,7 @@ export type AgentEvent =
 export interface Run {
   id: string;
   mode: RunMode;
-  driver: "claude" | "scripted";
+  driver: "claude" | "scripted" | "voice";
   protected: boolean;
   status: "running" | "done" | "error";
   startedAt: number;
@@ -51,6 +52,8 @@ export interface PlaygroundInfo {
   model: string;
   prompt: string;
   modes: RunMode[];
+  /** True when the hosted deployment can run the ElevenLabs voice call. */
+  voice: boolean;
   busy: boolean;
   runs: Array<Omit<Run, "events" | "exfiltrated"> & { leaked: boolean }>;
 }
@@ -73,6 +76,15 @@ export const playground = {
     });
     return (await res.json()) as { id: string } | { error: string };
   },
+  /** Resolve a hold from the page. The recorder requires the x-intentgate header on every write. */
+  async approve(approvalId: string, decision: "approved" | "denied"): Promise<boolean> {
+    const res = await fetch(`${PLAYGROUND_API}/api/approvals/${approvalId}`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-intentgate": "1" },
+      body: JSON.stringify({ decision }),
+    });
+    return res.ok;
+  },
 };
 
 export const MODES: Array<{ mode: RunMode; driver: string; title: string; detail: string; protected: boolean }> = [
@@ -80,4 +92,5 @@ export const MODES: Array<{ mode: RunMode; driver: string; title: string; detail
   { mode: "passthrough", driver: "Claude Opus", title: "Without", detail: "no gateway, no checks", protected: false },
   { mode: "hijacked", driver: "Hijacked agent", title: "With IntentGate", detail: "scripted, does what the README says", protected: true },
   { mode: "hijacked-passthrough", driver: "Hijacked agent", title: "Without", detail: "watch the key leak", protected: false },
+  { mode: "voice", driver: "Voice agent", title: "Run a support call", detail: "real ElevenLabs agent, you are the supervisor", protected: true },
 ];
