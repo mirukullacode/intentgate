@@ -1,43 +1,26 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { ArrowUpRight, Check, Copy, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { motion } from "motion/react";
+import { ArrowUpRight, Check } from "lucide-react";
 import { useReducedMotion } from "./tweenly/use-reduced-motion";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const PACKAGE = "intentgate-mcp";
-const COMMAND = `npx ${PACKAGE} agent --hijacked`;
-const STORAGE_KEY = "intentgate.banner.npm";
-const DISMISS_EVENT = "ig-banner-dismiss";
-
-function subscribe(onChange: () => void) {
-  window.addEventListener("storage", onChange);
-  window.addEventListener(DISMISS_EVENT, onChange);
-  return () => {
-    window.removeEventListener("storage", onChange);
-    window.removeEventListener(DISMISS_EVENT, onChange);
-  };
-}
-const readDismissed = () => {
-  try {
-    return localStorage.getItem(STORAGE_KEY) === "dismissed";
-  } catch {
-    return false;
-  }
-};
+const COMMANDS = [
+  { cmd: `npx ${PACKAGE} agent --hijacked`, note: "the attack, blocked" },
+  { cmd: `npx ${PACKAGE} init`, note: "protect Claude Desktop" },
+];
 
 /**
- * A one-line announcement bar for the npm package, in the spirit of tweenly's Banner but
- * trimmed to the document idiom: thin rule, mono label, version badge read live from the
- * registry, one copyable command, dismissible and remembered.
+ * A short, dark install card in the spirit of tweenly's hero: brand mark, one line, and
+ * the `$ npx …` pill with the accent dollar sign. Version is read live from the registry.
  */
-export function NpmBanner({ className }: { className?: string }) {
+export function NpmCard({ className }: { className?: string }) {
   const reduced = useReducedMotion();
-  const dismissed = useSyncExternalStore(subscribe, readDismissed, () => true);
   const [version, setVersion] = useState<string>();
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<string>();
 
   useEffect(() => {
     let cancelled = false;
@@ -52,67 +35,61 @@ export function NpmBanner({ className }: { className?: string }) {
     };
   }, []);
 
-  const dismiss = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, "dismissed");
-    } catch {}
-    window.dispatchEvent(new Event(DISMISS_EVENT));
-  };
-  const copy = async () => {
-    await navigator.clipboard.writeText(COMMAND);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+  const copy = async (cmd: string) => {
+    await navigator.clipboard.writeText(cmd);
+    setCopied(cmd);
+    setTimeout(() => setCopied(undefined), 1500);
   };
 
   return (
-    <AnimatePresence initial={false}>
-      {!dismissed && (
-        <motion.div
-          initial={reduced ? false : { height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: reduced ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className={cn("overflow-hidden border-b border-line bg-panel/70", className)}
-        >
-          <div className="mx-auto flex h-9 max-w-[1400px] items-center gap-3 px-5 text-[12.5px]">
-            <a href={site.npm} target="_blank" rel="noreferrer" className="label flex items-center gap-1.5 text-text">
-              <span className="size-1.5 rounded-full bg-brand" />
-              npm
-              <AnimatePresence mode="wait" initial={false}>
-                {version ? (
-                  <motion.span
-                    key={version}
-                    initial={reduced ? false : { opacity: 0, y: 3 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="rounded-sm border border-line bg-bg px-1.5 text-[10.5px] normal-case tracking-normal text-muted"
-                  >
-                    v{version}
-                  </motion.span>
-                ) : (
-                  <span className="inline-block h-4 w-9 animate-pulse rounded-sm bg-panel-2" />
-                )}
-              </AnimatePresence>
-            </a>
-            <span className="hidden text-muted sm:inline">Try the attack from any terminal:</span>
+    <motion.div
+      initial={reduced ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+      className={cn("scheme-dark relative overflow-hidden rounded-xl border border-white/[0.07] bg-[#0b0b10] p-5 text-text sm:p-6", className)}
+    >
+      {/* warm corner glow, like the reference */}
+      <div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-[radial-gradient(circle,rgba(10,61,255,0.35),transparent_60%)]" />
+      <div className="relative">
+        <div className="flex items-center justify-between gap-3">
+          <span className="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight">
+            <span className="flex size-6 items-center justify-center rounded-md bg-white text-black">
+              <svg width="12" height="12" viewBox="0 0 32 32" aria-hidden>
+                <path d="M9 22V10l7 6 7-6v12" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+            {PACKAGE}
+          </span>
+          <a href={site.npm} target="_blank" rel="noreferrer" className="label flex items-center gap-1.5 text-text/70 hover:text-text">
+            {version ? `v${version}` : <span className="inline-block h-3 w-8 animate-pulse rounded-sm bg-white/10" />} on npm <ArrowUpRight className="size-3" />
+          </a>
+        </div>
+
+        <p className="mt-4 text-[1.5rem] font-medium leading-[1.15] tracking-[-0.02em] sm:text-[1.8rem]">
+          One package.
+          <br />
+          <span className="text-text/60">Any MCP client.</span>
+        </p>
+
+        <div className="mt-5 grid gap-2">
+          {COMMANDS.map((c) => (
             <button
+              key={c.cmd}
               type="button"
-              onClick={copy}
-              className="group flex items-center gap-2 font-mono text-[12px] text-text hover:text-brand"
-              aria-label={`Copy ${COMMAND}`}
+              onClick={() => copy(c.cmd)}
+              aria-label={`Copy ${c.cmd}`}
+              className="group flex items-center gap-3 rounded-md border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 text-left font-mono text-[13px] transition-colors hover:border-white/20"
             >
-              <span className="text-muted">$</span>
-              {COMMAND}
-              {copied ? <Check className="size-3.5 text-allowed" /> : <Copy className="size-3.5 text-muted group-hover:text-brand" />}
+              <span className="text-[#5b7cff]">$</span>
+              <span className="shrink-0 whitespace-nowrap">{c.cmd}</span>
+              <span className="ml-auto hidden truncate text-[11px] font-sans text-text/50 lg:inline">{c.note}</span>
+              <span className="w-4 shrink-0 text-text/40 group-hover:text-text/80">
+                {copied === c.cmd ? <Check className="size-3.5 text-allowed" /> : <span className="text-[11px]">⌘C</span>}
+              </span>
             </button>
-            <a href={site.npm} target="_blank" rel="noreferrer" className="ml-auto hidden items-center gap-1 text-muted hover:text-text md:flex">
-              View on npm <ArrowUpRight className="size-3.5" />
-            </a>
-            <button type="button" onClick={dismiss} aria-label="Dismiss" className="-mr-1 flex size-7 items-center justify-center text-muted hover:text-text">
-              <X className="size-3.5" />
-            </button>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          ))}
+        </div>
+      </div>
+    </motion.div>
   );
 }
