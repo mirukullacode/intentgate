@@ -101,6 +101,7 @@ The repo ships a `Dockerfile` and `railway.json`. On Railway: *Deploy from GitHu
 - [Flight Recorder](docs/flight-recorder.md) · [Security model](docs/security.md)
 - [DX notes on ArmorIQ](docs/dx-notes-armoriq.md) · [Spike notes](docs/spike-notes.md)
 - [Takeaways: insight, ambition, next steps](docs/takeaways.md) · [Submission kit](docs/submission.md)
+- [Complete project analysis](docs/analysis.md): what is real, what was measured, what was found, the visitor verification log
 
 ## Takeaways in three lines
 
