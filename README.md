@@ -68,7 +68,7 @@ The voice agent session, an ElevenLabs agent over the hosted gateway, lookup all
 
 ![Flight Recorder showing the voice session with an allowed lookup and two holds](docs/proof-voice-session.png)
 
-**Run the call yourself.** On the [playground](https://intentgate-alpha.vercel.app/playground), *Run a support call* drives a real ElevenLabs agent through the gateway with a scripted social-engineering caller. You are the supervisor: when the agent asks to change its plan, Approve or Deny it from the Flight Recorder tab while the call is live. The gateway answers the agent within eight seconds either way, so the voice platform never times out, and records your decision when it lands.
+**Run the call yourself.** On the [playground](https://intentgate-alpha.vercel.app/playground), *Run a support call* drives a real ElevenLabs agent through the gateway with a scripted social-engineering caller. You are the supervisor: when the agent asks to change its plan, Approve or Deny it from the Flight Recorder tab while the call is live. The gateway answers the agent within five seconds either way, so the voice platform never times out, and records your decision when it lands.
 
 ![Playground voice run: caller, agent, tool calls, with the visitor as supervisor](docs/playground-voice.png)
 

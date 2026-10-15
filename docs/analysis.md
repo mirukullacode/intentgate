@@ -86,7 +86,7 @@ A document-style landing page with a sidebar index and a Human/Agent toggle, num
 
 One container, one port: the demo page, the recorder, the run API and the `/mcp` endpoint. Five run modes: Claude with and without the gateway, the scripted agent with and without, and a **voice run**: the server drives a real ElevenLabs conversation through the hosted gateway with a scripted social-engineering caller, and the visitor is the supervisor, approving or denying the plan changes from the page while the call is live. One run at a time, a fresh sandbox per run, an eight-second cooldown, a daily cap on model runs.
 
-Two voice-specific mechanics: the gateway answers a held call within eight seconds with "a supervisor has been notified" so the voice platform never times out, and still records the human's decision when it arrives; and tool names the voice platform prefixes (`IntentGate_shop__lookup_order`) are mapped back to the exposed tool, so a plan copied from the model's view of the tools binds correctly.
+Two voice-specific mechanics: the gateway answers a held call within five seconds with "a supervisor has been notified" so the voice platform never times out, and still records the human's decision when it arrives; and tool names the voice platform prefixes (`IntentGate_shop__lookup_order`) are mapped back to the exposed tool, so a plan copied from the model's view of the tools binds correctly.
 
 **On platform.armoriq.ai**
 

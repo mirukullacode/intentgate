@@ -19,7 +19,7 @@ export const VERSION = '0.1.0';
  * ElevenLabs and other voice clients time out tool calls at roughly 30 s; the decision
  * itself keeps waiting for the full approval timeout in the recorder.
  */
-export const HOLD_SOFT_TIMEOUT_MS = Number(process.env.INTENTGATE_HOLD_SOFT_TIMEOUT_MS ?? 8_000);
+export const HOLD_SOFT_TIMEOUT_MS = Number(process.env.INTENTGATE_HOLD_SOFT_TIMEOUT_MS ?? 5_000);
 
 export const INSTRUCTIONS = `IntentGate protects these tools with intent enforcement.
 Before using ANY other tool, call declare_plan with the user's goal and every tool call you intend to make, including the exact arguments you know (use "*" for values you cannot know yet).
