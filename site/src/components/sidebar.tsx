@@ -11,6 +11,7 @@ export const TOC = [
   { id: "mission", label: "Mission" },
   { id: "how", label: "How it works" },
   { id: "production", label: "In production" },
+  { id: "voice", label: "Voice" },
   { id: "runs", label: "Where it runs" },
   { id: "findings", label: "Findings" },
   { id: "takeaways", label: "Takeaways" },
